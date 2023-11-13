@@ -1,4 +1,6 @@
 # Ignore node_modules folder
 
-week1/task1/materi1.js
-week1/task1/materi3.js
+task1/materi1.js
+task1/materi3.js
+
+task2/index.js
