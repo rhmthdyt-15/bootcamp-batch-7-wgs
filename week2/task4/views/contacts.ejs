@@ -1,0 +1,19 @@
+<div class="container mt-4">
+    <h2>Data Kontak</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% data.forEach(contact => { %>
+                <tr>
+                    <td><%= contact.name %></td>
+                    <td><%= contact.email %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
