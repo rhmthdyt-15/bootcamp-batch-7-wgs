@@ -1,0 +1,26 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title m-0">Detail</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Form untuk menambahkan contact -->
+                    <ul class="list-group">
+                        <% if (Array.isArray(result) && result.length > 0) { %>
+                            <li class="list-group-item"><strong>Nama:</strong> <%= result[0].name %></li>
+                            <li class="list-group-item"><strong>Nomor Telepon:</strong> <%= result[0].phone %></li>
+                            <li class="list-group-item"><strong>Email:</strong> <%= result[0].email %></li>
+                        <% } else { %>
+                            <li class="list-group-item text-danger">Data tidak ditemukan</li>
+                        <% } %>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="/" class="btn btn-primary">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

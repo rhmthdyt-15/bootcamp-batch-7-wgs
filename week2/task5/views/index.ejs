@@ -1,0 +1,60 @@
+<!-- views/index.ejs -->
+
+<div class="container mt-5">
+    <h1>Daftar Contact</h1>
+    <!-- Button untuk membuka modal -->
+    <a href="/add" class="btn btn-primary mt-3">Tambah Data</a>
+
+    <% if (data.length > 0) { %>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.forEach((key, index) => { %>
+                    <tr>
+                        <th scope="row"><%= index + 1 %></th>
+                        <td><%= key.name %></td>
+                        <td><%= key.phone %></td>
+                        <td>
+                            <div class="text-center">
+                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                    <a href="/update/<%= key.name %>" class="btn btn-success">Update</a>
+                                    <!-- detail -->
+                                    <a href="/detail/<%= key.name %>" class="btn btn-primary">Lihat</a>
+                                    <!-- delete -->
+                                    <!-- <form action="/delete/<%= key.name %>?_method=DELETE" method="POST">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form> -->
+                                    <form id="deleteForm<%= key.name %>" action="/delete/<%= key.name %>?_method=DELETE" method="POST">
+                                        <button type="button" class="btn btn-danger" onclick="confirmDelete('<%= key.name %>')">Delete</button>
+                                    </form>            
+                                </div>
+                            </div>
+                            
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <h1 class="text-center mt-3">Belum ada data contact</h1>
+    <% } %>
+</div>
+
+<script>
+    function confirmDelete(name) {
+        if (confirm(`Apakah Anda yakin ingin menghapus kontak ${name}?`)) {
+            document.getElementById(`deleteForm${name}`).submit();
+        }
+    }
+</script>
+
+
+
+

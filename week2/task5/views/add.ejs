@@ -1,0 +1,38 @@
+<!-- views/add.ejs -->
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title m-0">Add Contact</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Menampilkan pesan kesalahan dari Express Validator -->
+                    <% errors.forEach(error => { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error.msg %>
+                    </div>
+                    <% }); %>
+                    <!-- Form untuk menambahkan contact -->
+                    <form id="addContactForm" action="/add" method="POST">
+                        <div class="form-group">
+                            <label for="contactName">Nama</label>
+                            <input type="text" class="form-control" id="contactName" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPhone">Nomor Telepon</label>
+                            <input type="text" class="form-control" id="contactPhone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email</label>
+                            <input type="email" class="form-control" id="contactEmail" name="email">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <a href="/" class="btn btn-secondary">Kembali</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
