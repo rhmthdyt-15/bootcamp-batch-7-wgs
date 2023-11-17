@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Budi",
+    "phone": "0812345678",
+    "email": "budi@example.com"
+  },
+  {
+    "name": "Citra K",
+    "phone": "089612902301",
+    "email": "citra@gmail.com"
+  },
+  {
+    "name": "Dewi",
+    "phone": "083456789012",
+    "email": ""
+  },
+  {
+    "name": "Eko",
+    "phone": "081234567890",
+    "email": ""
+  },
+  {
+    "name": "Fita",
+    "phone": "082345678901",
+    "email": "fita@example.com"
+  },
+  {
+    "name": "Gita",
+    "phone": "083456789012",
+    "email": ""
+  },
+  {
+    "name": "Hadi",
+    "phone": "081234567890",
+    "email": ""
+  },
+  {
+    "name": "Indah",
+    "phone": "082345678901",
+    "email": "indah@example.com"
+  },
+  {
+    "name": "Joko",
+    "phone": "083456789012",
+    "email": ""
+  }
+]

@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Detail Data</h2>
+                    <ul class="list-group">
+                        <% if (Array.isArray(result) && result.length > 0) { %>
+                            <li class="list-group-item"><strong>Nama:</strong> <%= result[0].name %></li>
+                            <li class="list-group-item"><strong>Nomor Telepon:</strong> <%= result[0].phone %></li>
+                            <li class="list-group-item"><strong>Email:</strong> <%= result[0].email %></li>
+                        <% } else { %>
+                            <li class="list-group-item text-danger">Data tidak ditemukan</li>
+                        <% } %>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="/contact" class="btn btn-warning text-white">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
