@@ -1,45 +1,45 @@
 <div class="container mt-5">
-    <h2>Contact List</h2>
-    <a href="/contact/tambah" class="btn btn-primary mb-3">Tambah Data</a>  
-    <table class="table">
-      <thead>
+  <h2>Contact List</h2>
+  <a href="/contact/tambah" class="btn btn-primary mb-3">Tambah Data</a>  
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nama</th>
+        <th scope="col">Telepon</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (data.length === 0) { %>
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Nama</th>
-          <th scope="col">Telepon</th>
-          <th scope="col">Action</th>
+          <td colspan="4" class="text-center">Belum ada data contact</td>
         </tr>
-      </thead>
-      <tbody>
-        <% if (data.length === 0) { %>
+      <% } else { %>
+        <% data.forEach((entry, index) => { %>
           <tr>
-            <td colspan="4" class="text-center">Belum ada data contact</td>
+            <th scope="row"><%= index + 1 %></th>
+            <td><%= entry.name %></td>
+            <td><%= entry.phone %></td>
+            <td>
+              <a href="/contact/detail/<%= entry.name %>" class="btn btn-info btn-sm">Detail</a>
+              <a href="/contact/edit/<%= entry.name %>" class="btn btn-warning btn-sm text-white">Edit</a>
+              <form id="deleteForm<%= entry.name %>" action="/contact/<%= entry.name %>/delete?_method=DELETE" method="POST" style="display: inline-block;">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmDelete('<%= entry.name %>')">Delete</button>
+              </form>                
+            </td>
           </tr>
-        <% } else { %>
-          <% data.forEach((entry, index) => { %>
-            <tr>
-              <th scope="row"><%= index + 1 %></th>
-              <td><%= entry.name %></td>
-              <td><%= entry.phone %></td>
-              <td>
-                <a href="/contact/detail/<%= entry.name %>" class="btn btn-info btn-sm">Detail</a>
-                <a href="/contact/<%= entry.name %>/edit" class="btn btn-warning btn-sm text-white">Edit</a>
-                <form id="deleteForm<%= entry.name %>" action="/contact/<%= entry.name %>/delete?_method=DELETE" method="POST" style="display: inline-block;">
-                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmDelete('<%= entry.name %>')">Delete</button>
-                </form>                
-              </td>
-            </tr>
-          <% }); %>
-        <% } %>
-      </tbody>
-      
-    </table>
-  </div>
+        <% }); %>
+      <% } %>
+    </tbody>
+    
+  </table>
+</div>
 
-  <script>
-    function confirmDelete(name) {
-        if (confirm(`Apakah Anda yakin ingin menghapus kontak ${name}?`)) {
-            document.getElementById(`deleteForm${name}`).submit();
-        }
-    }
+<script>
+  function confirmDelete(name) {
+      if (confirm(`Apakah Anda yakin ingin menghapus kontak ${name}?`)) {
+          document.getElementById(`deleteForm${name}`).submit();
+      }
+  }
 </script>

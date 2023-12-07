@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const YtSearch = () => {
@@ -61,6 +61,13 @@ const YtSearch = () => {
     setSelectedVideo(video);
     setSelectedVideoIndex(index);
   };
+
+  // Gunakan useEffect untuk memanggil handleSearch ketika komponen pertama kali di-render
+  useEffect(() => {
+    if (query.trim() !== "") {
+      handleSearch();
+    }
+  }, []);
 
   return (
     <div className="container mt-4">

@@ -1,12 +1,12 @@
+const validator = require('validator');
 const fs = require('fs');
 const path = require('path');
-const { validationResult, body } = require('express-validator');
-const validator = require('validator');
 
-
+// Path ke file data
 const dataFolder = 'data';
 const dataPath = path.join(dataFolder, 'contacts.json');
 
+// Fungsi untuk memastikan keberadaan file dan folder
 function ensureDataFile() {
   try {
     // Membuat folder data jika belum ada
@@ -23,6 +23,7 @@ function ensureDataFile() {
   }
 }
 
+// Fungsi untuk membaca data dari file
 function readDataFromFile() {
   try {
     ensureDataFile();
@@ -35,6 +36,7 @@ function readDataFromFile() {
   }
 }
 
+// Fungsi untuk menulis data ke dalam file
 function writeDataToFile(data) {
   try {
     ensureDataFile();
@@ -45,12 +47,26 @@ function writeDataToFile(data) {
   }
 }
 
+// Fungsi untuk validasi nomor telepon
+function validatePhoneNumber(phone) {
+  return validator.isMobilePhone(phone, 'id-ID') ? phone : null;
+}
+
+// Fungsi untuk validasi alamat email
+function validateEmail(email) {
+  return email && validator.isEmail(email) ? email : null;
+}
+
+// Fungsi untuk menampilkan data dengan opsional filter berdasarkan nama
 function displayData(data, filterName) {
+  // Menggunakan filter jika filterName disediakan
   const filteredData = filterName ? data.filter(entry => entry.name === filterName) : data;
 
+  // Menampilkan pesan jika data tidak ditemukan
   if (filteredData.length === 0) {
-    // console.log(filterName ? `Tidak ada data untuk nama ${filterName}` : 'Tidak ada data yang tersedia');
+    console.log(filterName ? `Tidak ada data untuk nama ${filterName}` : 'Tidak ada data yang tersedia');
   } else {
+    // Menampilkan setiap entri data
     filteredData.forEach((entry, index) => {
       console.log(`Data ${index + 1}:`);
       console.log(`  Nama: ${entry.name}`);
@@ -60,140 +76,119 @@ function displayData(data, filterName) {
   }
 }
 
-
-function isValidPhoneNumber(phone) {
-  return phone && validator.isMobilePhone(phone, 'id-ID') ? phone : null;
-}
-
-// Fungsi validasi email
-function validateEmail(email) {
-  return email && validator.isEmail(email) ? email : null;
-}
-
-// Fungsi pengecekan apakah nama sudah ada
-function isNameExists(name) {
-  const data = readDataFromFile();
-  return data.some(entry => entry.name === name);
-}
-
+// Fungsi untuk menambahkan data baru
 function addAction(name, phone, email) {
   const data = readDataFromFile();
+  const validatedPhone = validatePhoneNumber(phone);
+  const validatedEmail = validateEmail(email);
 
-  // Memeriksa apakah nama dan telepon sudah ada dalam data
-  const isNameExist = data.some(entry => entry.name === name);
-  const isPhoneExist = data.some(entry => entry.phone === phone);
-
-  const duplicateErrors = [];
-
-  // Menambahkan pesan kesalahan sesuai dengan data yang sudah ada
-  if (isNameExist) {
-    duplicateErrors.push({ msg: 'Nama sudah terdaftar.' });
+  // Jika nomor telepon valid, tambahkan data baru ke dalam array
+  if (validatedPhone !== null) {
+    data.push({ name, phone: validatedPhone, email: validatedEmail });
+    console.log(`Nama: ${name}`);
+    console.log(`Nomor telepon: ${validatedPhone}`);
+    console.log(`Email: ${validatedEmail || 'Tidak disertakan'}`);
+  } else {
+    // Menampilkan pesan jika nomor telepon tidak valid
+    console.log('Nomor telepon tidak valid.');
   }
 
-  if (isPhoneExist) {
-    duplicateErrors.push({ msg: 'Nomor telepon sudah terdaftar.' });
-  }
-
-  if (email && !validateEmail(email)) {
-    duplicateErrors.push({ msg: 'Format email tidak valid.' });
-  }
-
-  if (duplicateErrors.length > 0) {
-    console.log('Duplikasi data: Nama atau telepon sudah ada.');
-    return { success: false, errors: duplicateErrors };
-  }
-
-  // Jika tidak ada duplikasi, tambahkan data ke dalam file JSON
-  data.push({ name, phone, email });
+  // Menyimpan kembali data ke dalam file setelah modifikasi
   writeDataToFile(data);
-
-  return { success: true, errors: [] };
 }
 
 function listAction() {
   const data = readDataFromFile();
-  return data;
+  return data; // Pastikan fungsi mengembalikan nilai data
 }
 
 function detailAction(name) {
   const data = readDataFromFile();
-  const filteredData = data.filter(entry => entry.name === name);
-  displayData(filteredData, name);
-  return filteredData;
+  return data.find(entry => entry.name === name) || {};
 }
 
-function getDataByName(name) {
-  const data = readDataFromFile();
-  return data.filter(entry => entry.name === name);
-}
 
-function updateData(name, updatedData) {
+// Fungsi untuk memperbarui data berdasarkan nama
+async function updateData(name, options) {
+  // Membaca data dari file
   const data = readDataFromFile();
 
-  // Mencari indeks data yang akan diupdate
+  // Mencari indeks entri dengan nama yang sesuai
   const entryToUpdateIndex = data.findIndex(entry => entry.name === name);
 
   if (entryToUpdateIndex !== -1) {
-    // Memeriksa apakah ada perubahan pada nomor telepon
-    const isPhoneChanged = updatedData.phone && data[entryToUpdateIndex].phone !== updatedData.phone;
+    // Entry dengan nama yang cocok ditemukan
+    const { phone, email, newName } = options;
 
-    // Memeriksa apakah ada perubahan pada email
-    const isEmailChanged = updatedData.email && data[entryToUpdateIndex].email !== updatedData.email;
+    // Variabel untuk menyimpan informasi perubahan
+    let changes = [];
 
-    // Jika ada perubahan, periksa duplikasi data baru
-    if (isPhoneChanged) {
-      if (!isValidPhoneNumber(updatedData.phone)) {
-        const duplicateErrors = [{ msg: 'Nomor telepon tidak valid atau sudah terdaftar.' }];
-        console.log('Duplikasi data: Nomor telepon tidak valid atau sudah terdaftar.');
-        return { success: false, errors: duplicateErrors };
+    // Memperbarui nilai yang diberikan jika disediakan
+    if (newName) {
+      changes.push(`Nama berhasil diperbarui: ${data[entryToUpdateIndex].name} -> ${newName}`);
+      data[entryToUpdateIndex].name = newName;
+    }
+    if (phone) {
+      // Validasi dan pembaruan nomor telepon jika disediakan
+      const validatedPhone = validatePhoneNumber(phone);
+      if (validatedPhone !== null) {
+        changes.push(`Nomor telepon berhasil diperbarui: ${data[entryToUpdateIndex].phone} -> ${validatedPhone}`);
+        data[entryToUpdateIndex].phone = validatedPhone;
+      } else {
+        console.log('Nomor telepon tidak valid.');
+        return;
       }
-
-      // Memformat nomor telepon
-      updatedData.phone = isValidPhoneNumber(updatedData.phone);
+    }
+    if (email) {
+      // Validasi dan pembaruan alamat email jika disediakan
+      const validatedEmail = validateEmail(email);
+      if (validatedEmail !== null) {
+        changes.push(`Alamat email berhasil diperbarui: ${data[entryToUpdateIndex].email || 'Tidak disertakan'} -> ${validatedEmail}`);
+        data[entryToUpdateIndex].email = validatedEmail;
+      } else {
+        console.log('Alamat email tidak valid.');
+        return;
+      }
     }
 
-    if (isEmailChanged && updatedData.email !== '' && !validator.isEmail(updatedData.email)) {
-      const duplicateErrors = [{ msg: 'Format email tidak valid.' }];
-      console.log('Duplikasi data: Format email tidak valid.');
-      return { success: false, errors: duplicateErrors };
-    }
-
-    // Melakukan update data
-    data[entryToUpdateIndex] = {
-      name: updatedData.name || data[entryToUpdateIndex].name,
-      phone: updatedData.phone || data[entryToUpdateIndex].phone,
-      email: updatedData.email !== undefined ? updatedData.email : data[entryToUpdateIndex].email, // Menyertakan email asli jika tidak diupdate
-    };
-
+    // Menyimpan kembali data ke dalam file setelah modifikasi
     writeDataToFile(data);
 
-    console.log(`Data untuk nama ${name} berhasil diupdate.`);
-    return { success: true, errors: [] };
+    // Menampilkan informasi perubahan
+    console.log('Perubahan yang berhasil:');
+    changes.forEach(change => console.log(change));
+
   } else {
     console.log(`Tidak ada data untuk nama ${name}.`);
-    return { success: false, errors: [{ msg: 'Data tidak ditemukan.' }] };
   }
 }
 
-
-function deleteData(name) {
+// Fungsi untuk menghapus data berdasarkan nama
+async function deleteData(name) {
+  // Membaca data dari file
   const data = readDataFromFile();
+
+  // Mencari indeks entri dengan nama yang sesuai
   const entryToDeleteIndex = data.findIndex(entry => entry.name === name);
 
   if (entryToDeleteIndex !== -1) {
+    // Menghapus entri dengan nama yang sesuai
     data.splice(entryToDeleteIndex, 1);
+
+    // Menyimpan kembali data ke dalam file setelah penghapusan
     writeDataToFile(data);
-    // console.log(`Data untuk nama ${name} berhasil dihapus.`);
+
+    console.log(`Data untuk nama ${name} berhasil dihapus.`);
   } else {
-    // console.log(`Tidak ada data untuk nama ${name}.`);
+    console.log(`Tidak ada data untuk nama ${name}.`);
   }
 }
 
+// Mengekspor fungsi-fungsi agar dapat digunakan di file lain
 module.exports = {
-  addAction,
-  listAction,
-  detailAction,
-  updateData,
-  deleteData,
-  getDataByName
+    addAction,
+    listAction,
+    detailAction,
+    updateData,
+    deleteData
 };

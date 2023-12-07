@@ -7,8 +7,8 @@ import ImageSearch from "./components/imageSearch";
 function App() {
   return (
     <div className="App">
-      <Clock />
-      <Form />
+      {/* <Clock />
+      <Form /> */}
       <ImageSearch />
     </div>
   );

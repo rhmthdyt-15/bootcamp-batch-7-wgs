@@ -5,10 +5,10 @@
                 <div class="card-body">
                     <h2 class="card-title mb-4">Detail Data</h2>
                     <ul class="list-group">
-                        <% if (Array.isArray(result) && result.length > 0) { %>
-                            <li class="list-group-item"><strong>Nama:</strong> <%= result[0].name %></li>
-                            <li class="list-group-item"><strong>Nomor Telepon:</strong> <%= result[0].phone %></li>
-                            <li class="list-group-item"><strong>Email:</strong> <%= result[0].email %></li>
+                        <% if (data) { %>
+                            <li class="list-group-item"><strong>Nama:</strong> <%= data.name %></li>
+                            <li class="list-group-item"><strong>Nomor Telepon:</strong> <%= data.phone %></li>
+                            <li class="list-group-item"><strong>Email:</strong> <%= data.email %></li>
                         <% } else { %>
                             <li class="list-group-item text-danger">Data tidak ditemukan</li>
                         <% } %>
