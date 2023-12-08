@@ -7,6 +7,10 @@ import SequelizeStore from "connect-session-sequelize";
 import UserRouter from "./routes/UserRoute.js";
 import CategoryRouter from "./routes/CategoryRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
+import ProductRoute from "./routes/ProductRoute.js";
+import MemberRoute from "./routes/MemberRoute.js";
+import Product from "./models/ProductModel.js";
+import Member from "./models/MemberModel.js";
 
 dotenv.config(); // Pindahkan ini ke atas konfigurasi session
 
@@ -18,7 +22,7 @@ const store = new sessionStore({
   db: db,
 });
 // (async () => {
-//   await db.sync();
+//   await Member.sync();
 // })();
 
 app.use(
@@ -45,6 +49,8 @@ app.use(express.json());
 app.use(UserRouter);
 app.use(CategoryRouter);
 app.use(AuthRoute);
+app.use(ProductRoute);
+app.use(MemberRoute);
 
 // store.sync();
 
