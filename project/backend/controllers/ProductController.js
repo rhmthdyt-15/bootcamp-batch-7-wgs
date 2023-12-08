@@ -14,7 +14,7 @@ export const getProductAll = async (req, res) => {
       include: [
         {
           model: Categories,
-          as: "kategori", // Gantilah "kategoriId" dengan alias yang benar
+          as: "kategori",
           attributes: ["nama_kategori"],
         },
       ],
