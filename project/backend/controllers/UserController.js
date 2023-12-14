@@ -30,21 +30,21 @@ export const getUserById = async (req, res) => {
 
 // Create a new user
 export const createUser = async (req, res) => {
-  const { name, email, password, confPassword } = req.body;
+  const { name, email, password, confPassword, role } = req.body;
 
-  const userLogin = await User.findOne({
-    where: {
-      uuid: req.session.userId,
-    },
-  });
+  // const userLogin = await User.findOne({
+  //   where: {
+  //     uuid: req.session.userId,
+  //   },
+  // });
 
-  let role = "super admin";
+  // let role = "super admin";
 
-  if (userLogin.dataValues.role === "super admin") {
-    role = "admin";
-  } else if (userLogin.dataValues.role === "admin") {
-    role = "kasir";
-  }
+  // if (userLogin.dataValues.role === "super admin") {
+  //   role = "admin";
+  // } else if (userLogin.dataValues.role === "admin") {
+  //   role = "kasir";
+  // }
 
   // Memeriksa apakah password cocok
   if (password !== confPassword)
