@@ -3,9 +3,19 @@ import { HiOutlineBell, HiOutlineChatAlt, HiOutlineSearch } from 'react-icons/hi
 import { Menu, Popover, Transition } from '@headlessui/react'
 import classNames from 'classnames'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { LogOut, reset } from '../features/authSlice'
 
 function Header() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { user } = useSelector((state) => state.auth)
+
+    const logout = () => {
+        dispatch(LogOut())
+        dispatch(reset())
+        navigate('/login')
+    }
     return (
         <div className="bg-white h-16 px-4 flex justify-between items-center border-b border-gray-200">
             <div className="relative">
@@ -135,7 +145,7 @@ function Header() {
                                             active && 'bg-gray-100',
                                             'text-gray-700 focus:bg-gray-200 cursor-pointer rounded-sm px-4 py-2'
                                         )}
-                                        onClick={() => navigate('/logout')}
+                                        onClick={logout}
                                     >
                                         Logout
                                     </div>

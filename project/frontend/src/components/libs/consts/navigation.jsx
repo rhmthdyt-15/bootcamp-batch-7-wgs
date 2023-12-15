@@ -9,12 +9,20 @@ import {
     HiOutlineQuestionMarkCircle
 } from 'react-icons/hi'
 
+import { FaCubes } from 'react-icons/fa'
+
 export const DASHBOARD_SIDEBAR_LINKS = [
     {
         key: 'dashboard',
         Label: 'Dashboard',
         path: '/',
         icon: <HiOutlineViewGrid />
+    },
+    {
+        key: 'category',
+        Label: 'Category',
+        path: '/category',
+        icon: <FaCubes />
     },
     {
         key: 'products',
