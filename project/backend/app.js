@@ -4,6 +4,7 @@ import session from "express-session";
 import dotenv from "dotenv";
 import db from "./config/Database.js";
 import SequelizeStore from "connect-session-sequelize";
+import morgan from "morgan";
 import UserRouter from "./routes/UserRoute.js";
 import CategoryRouter from "./routes/CategoryRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
@@ -24,6 +25,8 @@ const store = new sessionStore({
 // (async () => {
 //   await Member.sync();
 // })();
+
+app.use(morgan("dev"));
 
 app.use(
   session({

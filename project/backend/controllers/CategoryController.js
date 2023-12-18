@@ -1,4 +1,5 @@
 import Category from "../models/CategoryModel.js";
+import { Op } from "sequelize";
 
 export const getCategory = async (req, res) => {
   try {
@@ -11,20 +12,36 @@ export const getCategory = async (req, res) => {
   }
 };
 
-export const getCategoryById = async (req, res) => {};
+export const getCategoryById = async (req, res) => {
+  try {
+    const response = await Category.findOne({
+      attributes: ["nama_kategori"],
+      where: {
+        uuid: req.params.id,
+      },
+    });
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
 
 export const createCategory = async (req, res) => {
-  const { nama_kategori } = req.body;
+  const { nama_kategori, categories } = req.body;
+
+  console.log("categories", categories.length);
 
   try {
-    // Menggunakan await untuk menunggu operasi create selesai
-    await Category.create({
-      nama_kategori: nama_kategori,
-    });
+    for (let i = 0; i < categories?.length; i++) {
+      await Category.create({
+        nama_kategori: categories[i].nama_kategori,
+      });
+    }
 
     // Memberikan respons setelah data berhasil ditambahkan
     return res.status(201).json({ msg: "Data berhasil ditambahkan" });
   } catch (error) {
+    console.error(error);
     // Memberikan respons jika terjadi kesalahan
     return res
       .status(400)
@@ -79,6 +96,23 @@ export const deleteCategory = async (req, res) => {
     return res.status(200).json({ msg: "Category deleted" });
   } catch (error) {
     console.error("Error deleting category:", error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+export const deleteMultipleCategory = async (req, res) => {
+  const { ids } = req.body;
+
+  try {
+    await Category.destroy({
+      where: {
+        uuid: ids,
+      },
+    });
+
+    return res.status(200).json({ msg: "Categories deleted" });
+  } catch (error) {
+    console.error("Error deleting categories:", error);
     return res.status(500).json({ msg: "Internal Server Error" });
   }
 };
