@@ -9,7 +9,7 @@ import {
     HiOutlineCog,
     HiOutlineQuestionMarkCircle
 } from 'react-icons/hi'
-import { FaCubes } from 'react-icons/fa'
+import { FaCube, FaCubes, FaRegIdCard } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { LogOut, reset } from '../features/authSlice'
 
@@ -48,19 +48,47 @@ export default function Sidebar() {
                     Dashboard
                 </Link>
                 {user && user.role === 'admin' && (
-                    <Link
-                        to="/category"
-                        className={classNames(
-                            pathname === '/category' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
-                            linkClasses
-                        )}
-                    >
-                        <span className="text-xl">
-                            <FaCubes />
-                        </span>
-                        Category
-                    </Link>
+                    <>
+                        <Link
+                            to="/category"
+                            className={classNames(
+                                pathname === '/category' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                                linkClasses
+                            )}
+                        >
+                            <span className="text-xl">
+                                <FaCubes />
+                            </span>
+                            Category
+                        </Link>
+
+                        <Link
+                            to="/products"
+                            className={classNames(
+                                pathname === '/products' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                                linkClasses
+                            )}
+                        >
+                            <span className="text-xl">
+                                <FaCube />
+                            </span>
+                            Product
+                        </Link>
+                    </>
                 )}
+
+                <Link
+                    to="/member"
+                    className={classNames(
+                        pathname === '/member' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        linkClasses
+                    )}
+                >
+                    <span className="text-xl">
+                        <FaRegIdCard />
+                    </span>
+                    Member
+                </Link>
             </div>
             <div className="flex flex-col gap-0.5 pt-2 border-t border-neutral-700">
                 <Link
