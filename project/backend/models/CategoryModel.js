@@ -1,24 +1,36 @@
-import { Sequelize } from "sequelize";
+import { Sequelize, DataTypes } from "sequelize";
 import db from "../config/Database.js";
 
-const { DataTypes } = Sequelize;
+const { INTEGER, STRING } = DataTypes;
 
-const Categories = db.define("categories", {
-  uuid: {
-    type: DataTypes.STRING,
-    defaultValue: DataTypes.UUIDV4,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
+const Category = db.define(
+  "categories",
+  {
+    id: {
+      type: INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
+    },
+    nama_kategori: {
+      type: STRING(255),
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      allowNull: false,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      allowNull: false,
     },
   },
-  nama_kategori: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-    },
-  },
-});
+  {
+    tableName: "categories",
+  }
+);
 
-export default Categories;
+export default Category;

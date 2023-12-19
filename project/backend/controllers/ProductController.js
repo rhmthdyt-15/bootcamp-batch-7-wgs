@@ -44,7 +44,7 @@ export const getProductDetail = async (req, res) => {
       include: [
         {
           model: Categories,
-          as: "kategori", // Gantilah "kategoriId" dengan alias yang benar
+          as: "kategori",
           attributes: ["nama_kategori"],
         },
       ],
@@ -64,7 +64,7 @@ export const createProduct = async (req, res) => {
     stok,
     foto_produk_path,
     diskon,
-    kategoriId, // Add this line
+    kategoriId,
   } = req.body;
 
   try {
@@ -72,13 +72,7 @@ export const createProduct = async (req, res) => {
       order: [["id", "DESC"]],
     });
 
-    let newProductId;
-    if (latestProduct) {
-      newProductId = latestProduct.id + 1;
-    } else {
-      newProductId = 1;
-    }
-
+    const newProductId = (latestProduct?.id ?? 0) + 1;
     const kodeProduk = "P" + String(newProductId).padStart(6, "0");
 
     const newProduct = await Product.create({
@@ -99,10 +93,11 @@ export const createProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
+    console.error("Error creating product:", error);
     return res.status(500).json({
       success: false,
       message: "Gagal menambahkan produk",
-      error: error.message,
+      error: error.message, // Menambahkan detail kesalahan ke respons
     });
   }
 };

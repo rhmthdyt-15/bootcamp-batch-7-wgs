@@ -4,7 +4,7 @@ import { Op } from "sequelize";
 export const getCategory = async (req, res) => {
   try {
     const response = await Category.findAll({
-      attributes: ["uuid", "nama_kategori"],
+      attributes: ["id", "nama_kategori"],
     });
     res.status(200).json(response);
   } catch (error) {
@@ -17,7 +17,7 @@ export const getCategoryById = async (req, res) => {
     const response = await Category.findOne({
       attributes: ["nama_kategori"],
       where: {
-        uuid: req.params.id,
+        id: req.params.id,
       },
     });
     res.status(200).json(response);
@@ -52,7 +52,7 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   const category = await Category.findOne({
     where: {
-      uuid: req.params.id,
+      id: req.params.id,
     },
   });
 
@@ -83,7 +83,7 @@ export const deleteCategory = async (req, res) => {
   try {
     const category = await Category.findOne({
       where: {
-        uuid: id,
+        id: id,
       },
     });
 
@@ -106,7 +106,7 @@ export const deleteMultipleCategory = async (req, res) => {
   try {
     await Category.destroy({
       where: {
-        uuid: ids,
+        id: ids,
       },
     });
 
