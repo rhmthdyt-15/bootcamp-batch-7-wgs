@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createProduct,
+  deleteMultipleProduct,
   deleteProduct,
   getProductAll,
   getProductDetail,
@@ -15,5 +16,7 @@ router.post("/product", verifyUser, adminOnly, createProduct);
 router.get("/product/:id", verifyUser, adminOnly, getProductDetail);
 router.patch("/product/:id", verifyUser, adminOnly, updateProduct);
 router.delete("/product/:id", verifyUser, adminOnly, deleteProduct);
+
+router.delete("/product", verifyUser, adminOnly, deleteMultipleProduct);
 
 export default router;

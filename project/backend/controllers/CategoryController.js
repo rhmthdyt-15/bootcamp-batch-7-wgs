@@ -29,8 +29,6 @@ export const getCategoryById = async (req, res) => {
 export const createCategory = async (req, res) => {
   const { nama_kategori, categories } = req.body;
 
-  console.log("categories", categories.length);
-
   try {
     for (let i = 0; i < categories?.length; i++) {
       await Category.create({

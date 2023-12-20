@@ -1,10 +1,13 @@
 import Product from "../models/ProductModel.js";
 import Categories from "../models/CategoryModel.js";
+import path from "path";
+import multer from "multer";
 
 export const getProductAll = async (req, res) => {
   try {
     const response = await Product.findAll({
       attributes: [
+        "id",
         "kode_produk",
         "nama_produk",
         "stok",
@@ -169,5 +172,22 @@ export const deleteProduct = async (req, res) => {
     res.status(200).json({ msg: "Product Deleted" });
   } catch (error) {
     res.status(400).json({ msg: error.message });
+  }
+};
+
+export const deleteMultipleProduct = async (req, res) => {
+  const { ids } = req.body;
+
+  try {
+    await Product.destroy({
+      where: {
+        id: ids,
+      },
+    });
+
+    return res.status(200).json({ msg: "Categories deleted" });
+  } catch (error) {
+    console.error("Error deleting categories:", error);
+    return res.status(500).json({ msg: "Internal Server Error" });
   }
 };

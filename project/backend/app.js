@@ -24,11 +24,11 @@ const sessionStore = SequelizeStore(session.Store);
 const store = new sessionStore({
   db: db,
 });
-(async () => {
-  await Category.sync();
-  await Product.sync();
-  // await Member.sync();
-})();
+// (async () => {
+//   await Category.sync();
+//   await Product.sync();
+//   // await Member.sync();
+// })();
 
 app.use(morgan("dev"));
 
