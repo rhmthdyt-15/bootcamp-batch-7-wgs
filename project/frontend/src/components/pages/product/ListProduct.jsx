@@ -4,6 +4,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../master/SweetAlertUtil'
 import { HiOutlineSearch } from 'react-icons/hi'
+import { formatRupiah } from '../../features/utils'
 
 function ListProduct() {
     const [products, setProducts] = useState([])
@@ -38,7 +39,7 @@ function ListProduct() {
     }
 
     const deleteSelectedProducts = async () => {
-        const selectedIds = products.filter((item) => item.selected).map((item) => item.kode_produk)
+        const selectedIds = products.filter((item) => item.selected).map((item) => item.id)
 
         if (selectedIds.length === 0) {
             showErrorAlert('Pilih setidaknya satu produk untuk dihapus.')
@@ -62,7 +63,7 @@ function ListProduct() {
     const toggleSelection = (productId) => {
         setProducts((prevProducts) =>
             prevProducts.map((item) => {
-                if (item.kode_produk === productId) {
+                if (item.id === productId) {
                     return { ...item, selected: !item.selected }
                 }
                 return item
@@ -87,6 +88,9 @@ function ListProduct() {
                     >
                         Tambah
                     </Link>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Cetak Barcode
+                    </button>
                     <button
                         onClick={deleteSelectedProducts}
                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -124,21 +128,21 @@ function ListProduct() {
                     </thead>
                     <tbody>
                         {products.map((product, index) => (
-                            <tr key={product.kode_produk}>
+                            <tr key={product.id}>
                                 <td>
                                     <input
                                         type="checkbox"
                                         checked={product.selected || false}
-                                        onChange={() => toggleSelection(product.kode_produk)}
+                                        onChange={() => toggleSelection(product.id)}
                                     />
                                 </td>
                                 <td>{index + 1}</td>
                                 <td>{product.nama_produk}</td>
                                 <td>{product.stok}</td>
-                                <td>{product.harga_jual}</td>
+                                <td className="font-bold">Rp. {formatRupiah(product.harga_jual)}</td>
                                 <td className="flex space-x-2">
                                     <Link
-                                        to={`./edit/${product.kode_produk}`}
+                                        to={`/products/edit/${product.id}`}
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     >
                                         Edit
@@ -151,7 +155,7 @@ function ListProduct() {
                                     </Link>
 
                                     <button
-                                        onClick={() => deleteProduct(product.kode_produk)}
+                                        onClick={() => deleteProduct(product.id)}
                                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                                     >
                                         Hapus

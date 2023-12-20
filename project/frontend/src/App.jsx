@@ -9,6 +9,7 @@ import EditCategory from './components/pages/category/EditCategory'
 import AddProduct from './components/pages/product/AddProduct'
 import Member from './components/pages/member'
 import DetailProduct from './components/pages/product/DetailProduct'
+import EditProduct from './components/pages/product/EditProduct'
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                     <Route path="products" element={<Product />} />
                     <Route path="products/add" element={<AddProduct />} />
                     <Route path="/products/detail/:id" element={<DetailProduct />} />
+                    <Route path="/products/edit/:id" element={<EditProduct />} />
 
                     {/*Products*/}
                     <Route path="member" element={<Member />} />

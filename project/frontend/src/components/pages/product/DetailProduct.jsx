@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useParams, Link } from 'react-router-dom'
+import { formatRupiah } from '../../features/utils'
 
 function DetailProduct() {
     const { id } = useParams()
-    console.log('Product ID:', id)
     const [product, setProduct] = useState(null)
 
     useEffect(() => {
@@ -32,9 +32,10 @@ function DetailProduct() {
                     <img src={product.foto_produk_path} alt={product.nama_produk} className="w-full h-auto mb-4" />
                 </div>
                 <div>
+                    <p className="text-gray-600 mb-2">Kode Produk: {product.kode_produk}</p>
                     <p className="text-gray-600 mb-2">Merk: {product.merk}</p>
-                    <p className="text-gray-600 mb-2">Harga Beli: {product.harga_beli}</p>
-                    <p className="text-gray-600 mb-2">Harga Jual: {product.harga_jual}</p>
+                    <p className="text-gray-600 mb-2 font-bold">Harga Beli: Rp.{formatRupiah(product.harga_beli)}</p>
+                    <p className="text-gray-600 mb-2 font-bold">Harga Jual: Rp.{formatRupiah(product.harga_jual)}</p>
                     <p className="text-gray-600 mb-2">Stok: {product.stok}</p>
                     <p className="text-gray-600 mb-2">Diskon: {product.diskon}</p>
                     <p className="text-gray-600 mb-2">Kategori: {product.kategori?.nama_kategori}</p>

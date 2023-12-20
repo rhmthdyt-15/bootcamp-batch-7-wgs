@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 
 const formFields = [
     { name: 'nama_produk', label: 'Nama Produk', type: 'text' },
@@ -13,8 +13,7 @@ const formFields = [
     { name: 'foto_produk_path', label: 'Foto Produk', type: 'text' }
 ]
 
-function AddProduct() {
-    const navigate = useNavigate()
+function EditProduct() {
     const [formData, setFormData] = useState({
         merk: '',
         nama_produk: '',
@@ -25,24 +24,10 @@ function AddProduct() {
         diskon: '',
         kategoriId: ''
     })
+    const { id } = useParams()
     const [categories, setCategories] = useState([])
-    const [isSubmitting, setIsSubmitting] = useState(false)
-
-    const addProduct = () => {
-        setFormData([
-            ...formData,
-            {
-                merk: '',
-                nama_produk: '',
-                harga_beli: '',
-                harga_jual: '',
-                stok: '',
-                foto_produk_path: '',
-                diskon: '',
-                kategoriId: ''
-            }
-        ])
-    }
+    const [product, setProduct] = useState(null)
+    const navigate = useNavigate()
 
     useEffect(() => {
         // Ambil kategori dari backend
@@ -50,9 +35,22 @@ function AddProduct() {
             .get('http://localhost:5000/category')
             .then((response) => setCategories(response.data))
             .catch((error) => console.error('Error fetching categories:', error))
-    }, [])
 
-    const handleChange = (e, index) => {
+        // Ambil data produk berdasarkan id
+        axios
+            .get(`http://localhost:5000/product/${id}`)
+            .then((response) => {
+                setProduct(response.data)
+                setFormData(response.data) // Mengisi formData dengan data produk
+            })
+            .catch((error) => console.error('Error fetching product:', error))
+    }, [id])
+
+    if (!product) {
+        return <div>Loading...</div>
+    }
+
+    const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
@@ -62,44 +60,20 @@ function AddProduct() {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        // Set state isSubmitting menjadi true
-        setIsSubmitting(true)
-
-        // Kirim permintaan POST untuk membuat produk baru
+        // Kirim permintaan PATCH untuk memperbarui produk
         axios
-            .post('http://localhost:5000/product', formData)
-            .then((response) => {
+            .patch(`http://localhost:5000/product/${id}`, formData)
+            .then(() => {
                 navigate('/products')
                 // Tangani kesuksesan, misalnya, tampilkan pesan sukses atau redirect
-
-                // Reset nilai formData setelah pengiriman formulir
-                setFormData({
-                    merk: '',
-                    nama_produk: '',
-                    harga_beli: '',
-                    harga_jual: '',
-                    stok: '',
-                    foto_produk_path: '',
-                    diskon: '',
-                    kategoriId: ''
-                })
-
-                // Set state isSubmitting menjadi false setelah pengiriman formulir
-                setIsSubmitting(false)
             })
-            .catch((error) => {
-                // Tangani kesalahan, misalnya, tampilkan pesan kesalahan
-                console.error('Error submitting form:', error)
-
-                // Set state isSubmitting menjadi false jika terjadi kesalahan
-                setIsSubmitting(false)
-            })
+            .catch((error) => console.error('Error updating product:', error))
     }
 
     return (
         <div className="bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 flex-1">
             <div className="flex justify-between items-center mb-3">
-                <strong className="text-gray-700 font-medium">Tambah Product</strong>
+                <strong className="text-gray-700 font-medium">Edit Produk</strong>
             </div>
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
@@ -152,9 +126,8 @@ function AddProduct() {
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         type="submit"
-                        disabled={isSubmitting} // Tambahkan atribut disabled selama proses pengiriman
                     >
-                        {isSubmitting ? 'Sedang Mengirim...' : 'Save'}
+                        Save
                     </button>
                     <Link
                         to="/products"
@@ -168,4 +141,4 @@ function AddProduct() {
     )
 }
 
-export default AddProduct
+export default EditProduct
