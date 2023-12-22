@@ -46,7 +46,7 @@ const Product = db.define(
       defaultValue: 0,
     },
     foto_produk_path: {
-      type: STRING(255),
+      type: STRING,
     },
     createdAt: {
       type: Sequelize.DATE,
@@ -64,8 +64,5 @@ const Product = db.define(
 
 Categories.hasMany(Product, { foreignKey: "kategoriId", as: "kategori" });
 Product.belongsTo(Categories, { foreignKey: "kategoriId", as: "kategori" });
-
-// Categories.hasMany(Product);
-// Product.belongsTo(Categories, { foreignKey: "kategoriId" });
 
 export default Product;

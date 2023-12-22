@@ -1,4 +1,25 @@
 import User from "../models/UserModel.js";
+import jwt from "jsonwebtoken";
+
+export const verifyToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized: Missing token" });
+  }
+
+  jwt.verify(token, process.env.SESS_SECRET, (err, decoded) => {
+    if (err) {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: Invalid or expired token" });
+    }
+
+    req.email = decoded.email;
+    next();
+  });
+};
 
 export const verifyUser = async (req, res, next) => {
   if (!req.session.userId) {

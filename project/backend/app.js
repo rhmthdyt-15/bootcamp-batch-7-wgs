@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import session from "express-session";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import db from "./config/Database.js";
 import SequelizeStore from "connect-session-sequelize";
 import morgan from "morgan";
@@ -31,6 +32,7 @@ const store = new sessionStore({
 // })();
 
 app.use(morgan("dev"));
+app.use(express.static("public"));
 
 app.use(
   session({
@@ -52,6 +54,7 @@ app.use(
 );
 
 app.use(fileUpload());
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(UserRouter);

@@ -1,7 +1,6 @@
 import Product from "../models/ProductModel.js";
 import Categories from "../models/CategoryModel.js";
 import path from "path";
-import multer from "multer";
 
 export const getProductAll = async (req, res) => {
   try {
@@ -65,9 +64,9 @@ export const createProduct = async (req, res) => {
     harga_beli,
     harga_jual,
     stok,
-    foto_produk_path,
     diskon,
     kategoriId,
+    foto_produk_path,
   } = req.body;
 
   try {

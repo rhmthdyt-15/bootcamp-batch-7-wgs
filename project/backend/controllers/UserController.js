@@ -1,11 +1,11 @@
 import User from "../models/UserModel.js";
-import argon2 from "argon2";
+import bcrypt from "bcrypt";
 
 // Get all users
 export const getUsers = async (req, res) => {
   try {
     const response = await User.findAll({
-      attributes: ["uuid", "name", "email", "role"],
+      attributes: ["id", "name", "email", "role"],
     });
     res.status(200).json(response);
   } catch (error) {
@@ -17,9 +17,9 @@ export const getUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const response = await User.findOne({
-      attributes: ["uuid", "name", "email", "role"],
+      attributes: ["id", "name", "email", "role"],
       where: {
-        uuid: req.params.id,
+        id: req.params.id,
       },
     });
     res.status(200).json(response);
@@ -34,7 +34,7 @@ export const createUser = async (req, res) => {
 
   // const userLogin = await User.findOne({
   //   where: {
-  //     uuid: req.session.userId,
+  //    id: req.session.userId,
   //   },
   // });
 
@@ -52,20 +52,30 @@ export const createUser = async (req, res) => {
       .status(400)
       .json({ msg: "Password and Confirm Password do not match" });
 
+  const salt = await bcrypt.genSalt();
   // Melakukan hash pada password
-  const hashPassword = await argon2.hash(password);
+  const hashPassword = await bcrypt.hash(password, salt);
 
   try {
     // Membuat pengguna baru
-    await User.create({
+    const newUser = await User.create({
       name: name,
       email: email,
       password: hashPassword,
       role: role,
     });
-    res.status(201).json({ msg: "Registration successful" });
+
+    return res.status(201).json({
+      success: true,
+      message: "User berhasil ditambahkan",
+      data: newUser,
+    });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Gagal menambahkan users",
+      error: error.message, // Menambahkan detail kesalahan ke respons
+    });
   }
 };
 
@@ -73,7 +83,7 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   const user = await User.findOne({
     where: {
-      uuid: req.params.id,
+      id: req.params.id,
     },
   });
 
@@ -123,7 +133,7 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const user = await User.findOne({
     where: {
-      uuid: req.params.id,
+      id: req.params.id,
     },
   });
 
