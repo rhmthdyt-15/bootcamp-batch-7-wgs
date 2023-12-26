@@ -7,16 +7,16 @@ import {
   getProductDetail,
   updateProduct,
 } from "../controllers/ProductController.js";
-import { adminOnly, verifyUser } from "../middleware/Auth.js";
+import { adminOnly, verifyToken } from "../middleware/Auth.js";
 
 const router = express.Router();
 
-router.get("/product", verifyUser, adminOnly, getProductAll);
-router.post("/product", verifyUser, adminOnly, createProduct);
-router.get("/product/:id", verifyUser, adminOnly, getProductDetail);
-router.patch("/product/:id", verifyUser, adminOnly, updateProduct);
-router.delete("/product/:id", verifyUser, adminOnly, deleteProduct);
+router.get("/product", verifyToken, adminOnly, getProductAll);
+router.post("/product", verifyToken, adminOnly, createProduct);
+router.get("/product/:id", verifyToken, adminOnly, getProductDetail);
+router.put("/product/:id", verifyToken, adminOnly, updateProduct);
+router.delete("/product/:id", verifyToken, adminOnly, deleteProduct);
 
-router.delete("/product", verifyUser, adminOnly, deleteMultipleProduct);
+router.delete("/product", verifyToken, adminOnly, deleteMultipleProduct);
 
 export default router;

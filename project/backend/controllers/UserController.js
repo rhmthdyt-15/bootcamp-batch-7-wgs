@@ -1,21 +1,25 @@
+// Import model user (gantilah sesuai dengan struktur folder dan nama model Anda)
 import User from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 
-// Get all users
+// Fungsi untuk mendapatkan semua data pengguna
 export const getUsers = async (req, res) => {
   try {
+    // Mengambil semua data pengguna dengan atribut tertentu
     const response = await User.findAll({
       attributes: ["id", "name", "email", "role"],
     });
     res.status(200).json(response);
   } catch (error) {
+    // Mengirimkan respons dengan status Internal Server Error jika terjadi kesalahan
     res.status(500).json({ msg: error.message });
   }
 };
 
-// Get user by ID
+// Fungsi untuk mendapatkan data pengguna berdasarkan ID
 export const getUserById = async (req, res) => {
   try {
+    // Mencari pengguna berdasarkan ID dengan atribut tertentu
     const response = await User.findOne({
       attributes: ["id", "name", "email", "role"],
       where: {
@@ -24,27 +28,14 @@ export const getUserById = async (req, res) => {
     });
     res.status(200).json(response);
   } catch (error) {
+    // Mengirimkan respons dengan status Internal Server Error jika terjadi kesalahan
     res.status(500).json({ msg: error.message });
   }
 };
 
-// Create a new user
+// Fungsi untuk membuat pengguna baru
 export const createUser = async (req, res) => {
   const { name, email, password, confPassword, role } = req.body;
-
-  // const userLogin = await User.findOne({
-  //   where: {
-  //    id: req.session.userId,
-  //   },
-  // });
-
-  // let role = "super admin";
-
-  // if (userLogin.dataValues.role === "super admin") {
-  //   role = "admin";
-  // } else if (userLogin.dataValues.role === "admin") {
-  //   role = "kasir";
-  // }
 
   // Memeriksa apakah password cocok
   if (password !== confPassword)
@@ -52,12 +43,14 @@ export const createUser = async (req, res) => {
       .status(400)
       .json({ msg: "Password and Confirm Password do not match" });
 
+  // Membuat salt untuk hashing password
   const salt = await bcrypt.genSalt();
+
   // Melakukan hash pada password
   const hashPassword = await bcrypt.hash(password, salt);
 
   try {
-    // Membuat pengguna baru
+    // Membuat pengguna baru dengan data yang diberikan
     const newUser = await User.create({
       name: name,
       email: email,
@@ -65,13 +58,15 @@ export const createUser = async (req, res) => {
       role: role,
     });
 
-    return res.status(201).json({
+    // Mengirimkan respons dengan status Created jika pengguna berhasil ditambahkan
+    res.status(201).json({
       success: true,
       message: "User berhasil ditambahkan",
       data: newUser,
     });
   } catch (error) {
-    return res.status(500).json({
+    // Mengirimkan respons dengan status Internal Server Error jika terjadi kesalahan
+    res.status(500).json({
       success: false,
       message: "Gagal menambahkan users",
       error: error.message, // Menambahkan detail kesalahan ke respons
@@ -79,7 +74,7 @@ export const createUser = async (req, res) => {
   }
 };
 
-// Update user information
+// Fungsi untuk memperbarui informasi pengguna
 export const updateUser = async (req, res) => {
   const user = await User.findOne({
     where: {
@@ -100,7 +95,7 @@ export const updateUser = async (req, res) => {
     hashPassword = user.password;
   } else {
     // Melakukan hash pada password baru
-    hashPassword = await argon2.hash(password);
+    hashPassword = await bcrypt.hash(password, 10);
   }
 
   // Memeriksa apakah password cocok
@@ -125,11 +120,12 @@ export const updateUser = async (req, res) => {
     );
     res.status(201).json({ msg: "Update successful" });
   } catch (error) {
+    // Mengirimkan respons dengan status Internal Server Error jika terjadi kesalahan
     res.status(500).json({ msg: "An error occurred while updating user" });
   }
 };
 
-// Delete user
+// Fungsi untuk menghapus pengguna berdasarkan ID
 export const deleteUser = async (req, res) => {
   const user = await User.findOne({
     where: {
@@ -149,6 +145,7 @@ export const deleteUser = async (req, res) => {
     });
     res.status(200).json({ msg: "User Deleted" });
   } catch (error) {
+    // Mengirimkan respons dengan status Bad Request jika terjadi kesalahan
     res.status(400).json({ msg: error.message });
   }
 };

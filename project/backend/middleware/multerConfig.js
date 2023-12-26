@@ -1,23 +1,18 @@
+// multerConfig.js
 import multer from "multer";
 import path from "path";
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/images/product");
+  destination: (req, file, cb) => {
+    cb(null, "public/images/product"); // Folder tujuan untuk menyimpan berkas
   },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const fileExtension = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
   },
 });
 
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5, // Batasan ukuran file: 5 MB (sesuaikan sesuai kebutuhan)
-  },
-}).single("foto_produk_path");
+const upload = multer({ storage: storage });
 
 export default upload;

@@ -7,16 +7,18 @@ import {
   updateCategory,
   deleteMultipleCategory,
 } from "../controllers/CategoryController.js";
-import { adminOnly, verifyUser } from "../middleware/Auth.js";
+import { verifyToken } from "../middleware/Auth.js";
+import { adminOnly } from "../middleware/AccessRole.js";
+import { validateCategory } from "../middleware/validation/categoriValidations.js";
 
 const router = express.Router();
 
-router.get("/category", verifyUser, adminOnly, getCategory);
-router.post("/category", verifyUser, adminOnly, createCategory);
-router.get("/category/:id", verifyUser, adminOnly, getCategoryById);
-router.patch("/category/:id", verifyUser, adminOnly, updateCategory);
-router.delete("/category/:id", verifyUser, adminOnly, deleteCategory);
+router.get("/category", verifyToken, adminOnly, getCategory);
+router.post("/category", verifyToken, createCategory);
+router.get("/category/:id", verifyToken, getCategoryById);
+router.put("/category/:id", verifyToken, updateCategory);
+router.delete("/category/:id", verifyToken, deleteCategory);
 
-router.delete("/category", verifyUser, adminOnly, deleteMultipleCategory);
+router.delete("/category", verifyToken, deleteMultipleCategory);
 
 export default router;

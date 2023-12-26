@@ -6,7 +6,7 @@ import {
   getUserById,
   updateUser,
 } from "../controllers/UserController.js";
-import { verifyUser, adminOnly, verifyToken } from "../middleware/Auth.js";
+import { adminOnly, verifyToken } from "../middleware/Auth.js";
 
 const router = express.Router();
 
