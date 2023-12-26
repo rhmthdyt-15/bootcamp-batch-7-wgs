@@ -5,36 +5,41 @@ import { FaMinus, FaPlus } from 'react-icons/fa'
 import { useAuth } from '../../auth/useAuth'
 import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
+// Komponen untuk menambah kategori
 function AddCategory() {
     const [categories, setCategories] = useState([
-        // Default category object
+        // Objek kategori default
         { nama_kategori: '' }
     ])
 
-    const { axiosJWT, Config } = useAuth()
-    const [msg, setMsg] = useState('')
-    const navigate = useNavigate()
+    const { axiosJWT, Config } = useAuth() // Mengambil objek axiosJWT dan Config dari useAuth hook
+    const [msg, setMsg] = useState('') // State untuk menyimpan pesan kesalahan
+    const navigate = useNavigate() // Fungsi navigasi dari react-router-dom
 
+    // Fungsi untuk mengubah nilai input kategori
     const handleInputChange = (index, value) => {
         const updatedCategories = [...categories]
         updatedCategories[index].nama_kategori = value
         setCategories(updatedCategories)
     }
 
+    // Fungsi untuk menambah kategori baru
     const addCategory = () => {
         setCategories([...categories, { nama_kategori: '' }])
     }
 
+    // Fungsi untuk menghapus kategori berdasarkan indeks
     const removeCategory = (index) => {
         const updatedCategories = [...categories]
         updatedCategories.splice(index, 1)
         setCategories(updatedCategories)
     }
 
+    // Fungsi untuk menyimpan kategori ke server
     const saveCategory = async (e) => {
         e.preventDefault()
         try {
-            // Send all categories to the server
+            // Mengirim permintaan ke server untuk menyimpan kategori
             await axiosJWT.post(
                 'http://localhost:5000/category',
                 {
@@ -42,9 +47,11 @@ function AddCategory() {
                 },
                 Config
             )
+            // Redirect ke halaman kategori dan tampilkan pemberitahuan sukses
             navigate('/category')
             showSuccessAlert('Category Berhasil Ditambahkan!')
         } catch (error) {
+            // Menangani kesalahan saat penyimpanan kategori gagal
             if (error.response) {
                 setMsg(error.response.data.msg)
             }

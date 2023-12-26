@@ -2,21 +2,26 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
+// Komponen untuk halaman Login
 function Login() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [msg, setMsg] = useState('')
-    const navigate = useNavigate()
+    const [email, setEmail] = useState('') // State untuk menyimpan nilai email
+    const [password, setPassword] = useState('') // State untuk menyimpan nilai password
+    const [msg, setMsg] = useState('') // State untuk menyimpan pesan kesalahan
+    const navigate = useNavigate() // Fungsi navigasi dari react-router-dom
 
+    // Fungsi otentikasi yang dipanggil saat formulir login disubmit
     const Auth = async (e) => {
         e.preventDefault()
         try {
+            // Mengirim permintaan otentikasi ke server
             await axios.post('http://localhost:5000/login', {
                 email: email,
                 password: password
             })
+            // Jika otentikasi berhasil, redirect ke halaman utama
             navigate('/')
         } catch (error) {
+            // Menangani kesalahan saat otentikasi gagal
             if (error.response) {
                 setMsg(error.response.data.msg)
             }

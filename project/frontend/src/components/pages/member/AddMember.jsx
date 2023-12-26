@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
 import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
+// Array yang mendefinisikan field-form yang akan digunakan
 const formFields = [
     { name: 'nama', label: 'Nama', type: 'text' },
     { name: 'alamat', label: 'Alamat', type: 'text' },
     { name: 'telepon', label: 'Telepon', type: 'number' } // Ganti type menjadi 'text'
 ]
 
+// Komponen untuk menambah member baru
 function AddMember() {
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
@@ -19,6 +21,7 @@ function AddMember() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { axiosJWT, Config } = useAuth()
 
+    // Fungsi yang akan dipanggil saat nilai input berubah
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -26,6 +29,7 @@ function AddMember() {
         })
     }
 
+    // Fungsi yang akan dipanggil saat formulir disubmit
     const handleSubmit = (e) => {
         e.preventDefault()
 
@@ -64,6 +68,7 @@ function AddMember() {
                 <strong className="text-gray-700 font-medium">Tambah Member</strong>
             </div>
             <form onSubmit={handleSubmit}>
+                {/* Membuat input form dinamis berdasarkan formFields */}
                 {formFields.map((field) => (
                     <div className="w-full md:w-1/2 mb-4" key={field.name}>
                         <div className="mb-2">

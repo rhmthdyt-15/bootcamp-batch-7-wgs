@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useAuth } from '../../auth/useAuth'
 import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
+// Definisi field untuk formulir
 const formFields = [
     { name: 'nama_produk', label: 'Nama Produk', type: 'text' },
     { name: 'merk', label: 'Merk', type: 'text' },
@@ -16,7 +17,10 @@ const formFields = [
 ]
 
 function AddProduct() {
+    // Menggunakan hook useNavigate untuk navigasi halaman
     const navigate = useNavigate()
+
+    // State untuk menyimpan data formulir
     const [formData, setFormData] = useState({
         merk: '',
         nama_produk: '',
@@ -27,10 +31,17 @@ function AddProduct() {
         diskon: '',
         kategoriId: ''
     })
+
+    // State untuk menyimpan data kategori
     const [categories, setCategories] = useState([])
+
+    // State untuk mengindikasikan status pengiriman formulir
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
     const { axiosJWT, Config } = useAuth()
 
+    // Fungsi untuk menambahkan produk baru ke formulir
     const addProduct = () => {
         setFormData([
             ...formData,
@@ -47,6 +58,7 @@ function AddProduct() {
         ])
     }
 
+    // Menggunakan useEffect untuk memuat data kategori ketika komponen dimount
     useEffect(() => {
         // Ambil kategori dari backend
         axiosJWT
@@ -55,6 +67,7 @@ function AddProduct() {
             .catch((error) => console.error('Error fetching categories:', error))
     }, [])
 
+    // Fungsi untuk meng-handle perubahan input pada formulir
     const handleChange = (e, index) => {
         setFormData({
             ...formData,
@@ -62,6 +75,7 @@ function AddProduct() {
         })
     }
 
+    // Fungsi untuk meng-handle pengiriman formulir
     const handleSubmit = (e) => {
         e.preventDefault()
 
@@ -74,7 +88,6 @@ function AddProduct() {
             .then((response) => {
                 navigate('/products')
                 showSuccessAlert('Product Berhasil Ditambahkan!')
-                // Tangani kesuksesan, misalnya, tampilkan pesan sukses atau redirect
 
                 // Reset nilai formData setelah pengiriman formulir
                 setFormData({
@@ -100,6 +113,7 @@ function AddProduct() {
             })
     }
 
+    // Mengembalikan tampilan komponen AddProduct
     return (
         <div className="bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 flex-1">
             <div className="flex justify-between items-center mb-3">
@@ -153,6 +167,7 @@ function AddProduct() {
 
                 {/* Buttons */}
                 <div className="flex justify-end">
+                    {/* Tombol untuk menyimpan formulir */}
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         type="submit"
@@ -160,6 +175,8 @@ function AddProduct() {
                     >
                         {isSubmitting ? 'Sedang Mengirim...' : 'Save'}
                     </button>
+
+                    {/* Tombol untuk kembali ke halaman products */}
                     <Link
                         to="/products"
                         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-2"
@@ -172,4 +189,5 @@ function AddProduct() {
     )
 }
 
+// Mengekspor komponen AddProduct sebagai default
 export default AddProduct

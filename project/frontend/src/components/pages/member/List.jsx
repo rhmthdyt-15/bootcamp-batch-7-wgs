@@ -4,17 +4,24 @@ import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../m
 import { HiOutlineSearch } from 'react-icons/hi'
 import { useAuth } from '../../auth/useAuth'
 
+// Komponen List untuk menampilkan daftar member
 function List() {
+    // State untuk menyimpan data member
     const [member, setMember] = useState([])
+
+    // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
     const { axiosJWT, Config } = useAuth()
 
+    // Menggunakan useEffect untuk memuat data member ketika komponen dimount
     useEffect(() => {
         getMember()
     }, [])
 
+    // Fungsi untuk mengambil data member dari server
     const getMember = async () => {
         try {
             const response = await axiosJWT.get('http://localhost:5000/member', Config)
+            // Menyimpan data member ke dalam state dengan menambahkan properti selected
             setMember(response.data.map((item) => ({ ...item, selected: false })))
         } catch (error) {
             console.error('Error fetching member:', error)
@@ -22,6 +29,7 @@ function List() {
         }
     }
 
+    // Fungsi untuk menghapus member berdasarkan ID
     const deleteMember = async (memberId) => {
         const result = await showConfirmationAlert('Apakah Anda yakin?', 'Member ini akan dihapus!')
 
@@ -37,6 +45,7 @@ function List() {
         }
     }
 
+    // Fungsi untuk menghapus member terpilih
     const deleteSelectedMember = async () => {
         const selectedIds = member.filter((item) => item.selected).map((item) => item.id)
 
@@ -45,7 +54,7 @@ function List() {
             return
         }
 
-        const result = await showConfirmationAlert('Apakah Anda yakin?', 'Kategori terpilih akan dihapus!')
+        const result = await showConfirmationAlert('Apakah Anda yakin?', 'Member terpilih akan dihapus!')
 
         if (result.isConfirmed) {
             try {
@@ -59,9 +68,10 @@ function List() {
         }
     }
 
+    // Fungsi untuk membalikkan status selected pada suatu member
     const toggleSelection = (memberId) => {
-        setMember((prevmember) =>
-            prevmember.map((item) => {
+        setMember((prevMember) =>
+            prevMember.map((item) => {
                 if (item.id === memberId) {
                     return { ...item, selected: !item.selected }
                 }
@@ -70,23 +80,27 @@ function List() {
         )
     }
 
+    // Fungsi untuk membalikkan status selected pada semua member
     const toggleAllSelection = () => {
-        setMember((prevmember) =>
-            prevmember.map((item) => ({ ...item, selected: !prevmember.every((item) => item.selected) }))
+        setMember((prevMember) =>
+            prevMember.map((item) => ({ ...item, selected: !prevMember.every((item) => item.selected) }))
         )
     }
 
+    // Mengembalikan tampilan komponen List
     return (
         <div className="bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 flex-1">
             <strong className="text-gray-700 font-medium text-xl">Daftar member</strong>
             <div className="flex justify-between items-center mb-3 mt-3">
                 <div className="relative space-x-2">
+                    {/* Tombol untuk menambahkan member baru */}
                     <Link
                         to="/members/add"
                         className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                     >
                         Tambah
                     </Link>
+                    {/* Tombol untuk menghapus member terpilih */}
                     <button
                         onClick={deleteSelectedMember}
                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -95,6 +109,7 @@ function List() {
                     </button>
                 </div>
                 <div className="relative">
+                    {/* Icon pencarian dan input untuk mencari member */}
                     <HiOutlineSearch fontSize={20} className="text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
                     <input
                         type="text"
@@ -104,10 +119,12 @@ function List() {
                 </div>
             </div>
 
+            {/* Tabel untuk menampilkan data member */}
             <div className="border-x border-gray-200 rounded-sm">
                 <table className="w-full text-gray-700">
                     <thead>
                         <tr>
+                            {/* Checkbox untuk memilih semua member */}
                             <th>
                                 <input
                                     type="checkbox"
@@ -124,8 +141,10 @@ function List() {
                         </tr>
                     </thead>
                     <tbody>
+                        {/* Menggunakan map untuk membuat baris data untuk setiap member */}
                         {member.map((members, index) => (
                             <tr key={members.id}>
+                                {/* Checkbox untuk memilih member individual */}
                                 <td>
                                     <input
                                         type="checkbox"
@@ -138,6 +157,7 @@ function List() {
                                 <td>{members.nama}</td>
                                 <td>{members.alamat}</td>
                                 <td>{members.telepon}</td>
+                                {/* Tombol Edit dan Hapus untuk setiap member */}
                                 <td className="flex space-x-2">
                                     <Link
                                         to={`/members/edit/${members.id}`}
@@ -161,4 +181,5 @@ function List() {
     )
 }
 
+// Mengekspor komponen List sebagai default
 export default List

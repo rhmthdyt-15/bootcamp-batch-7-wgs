@@ -4,13 +4,15 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
 import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
+// Komponen untuk mengedit kategori
 function EditCategory() {
-    const [nama_kategori, setNama_kategori] = useState('')
-    const [msg, setMsg] = useState('')
-    const navigate = useNavigate()
-    const { id } = useParams()
-    const { axiosJWT, Config } = useAuth()
+    const [nama_kategori, setNama_kategori] = useState('') // State untuk menyimpan nama kategori
+    const [msg, setMsg] = useState('') // State untuk menyimpan pesan kesalahan
+    const navigate = useNavigate() // Fungsi navigasi dari react-router-dom
+    const { id } = useParams() // Mengambil parameter id dari URL
+    const { axiosJWT, Config } = useAuth() // Mengambil objek axiosJWT dan Config dari useAuth hook
 
+    // Mengambil data kategori berdasarkan id saat komponen dimount
     useEffect(() => {
         const getCategoryById = async () => {
             try {
@@ -25,6 +27,7 @@ function EditCategory() {
         getCategoryById()
     }, [id])
 
+    // Fungsi untuk mengirim permintaan ke server untuk memperbarui kategori
     const updateCategory = async (e) => {
         e.preventDefault()
         try {
@@ -35,9 +38,11 @@ function EditCategory() {
                 },
                 Config
             )
+            // Redirect ke halaman kategori dan tampilkan pemberitahuan sukses
             navigate('/category')
             showSuccessAlert('Category Berhasil Diupdate!')
         } catch (error) {
+            // Menangani kesalahan saat penyimpanan kategori gagal
             if (error.response) {
                 setMsg(error.response.data.msg)
             }
