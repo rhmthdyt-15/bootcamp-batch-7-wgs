@@ -1,29 +1,12 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { getMe } from '../../features/authSlice'
-import ListProduct from './ListProduct'
+import React from 'react'
+import { useAuth } from '../../auth/useAuth'
+import List from './List'
 
 function Product() {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const { isError, user } = useSelector((state) => state.auth)
-
-    useEffect(() => {
-        dispatch(getMe())
-    }, [dispatch])
-
-    useEffect(() => {
-        if (isError) {
-            navigate('/login')
-        }
-        if (user && user.role !== 'admin') {
-            navigate('/')
-        }
-    }, [isError, user, navigate])
+    const { token } = useAuth()
     return (
         <div className="flex flex-row w-full">
-            <ListProduct />
+            <List token={token} />
         </div>
     )
 }

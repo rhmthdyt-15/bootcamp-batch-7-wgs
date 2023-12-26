@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useParams, Link } from 'react-router-dom'
 import { formatRupiah } from '../../features/utils'
+import { useAuth } from '../../auth/useAuth'
 
 function DetailProduct() {
     const { id } = useParams()
     const [product, setProduct] = useState(null)
+    const { axiosJWT, Config } = useAuth()
 
     useEffect(() => {
         // Ambil data produk berdasarkan id
-        axios
-            .get(`http://localhost:5000/product/${id}`)
+        axiosJWT
+            .get(`http://localhost:5000/product/${id}`, Config)
             .then((response) => {
                 setProduct(response.data)
             })

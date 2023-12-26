@@ -2,7 +2,7 @@ import React from 'react'
 import { useAuth } from '../../auth/useAuth'
 import List from './List'
 
-function Member() {
+function Supplier() {
     const { token } = useAuth()
     return (
         <div className="flex flex-row w-full">
@@ -11,4 +11,4 @@ function Member() {
     )
 }
 
-export default Member
+export default Supplier

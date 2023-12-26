@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../auth/useAuth'
+import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
 const formFields = [
     { name: 'nama_produk', label: 'Nama Produk', type: 'text' },
@@ -28,17 +30,18 @@ function EditProduct() {
     const [categories, setCategories] = useState([])
     const [product, setProduct] = useState(null)
     const navigate = useNavigate()
+    const { axiosJWT, Config } = useAuth()
 
     useEffect(() => {
         // Ambil kategori dari backend
-        axios
-            .get('http://localhost:5000/category')
+        axiosJWT
+            .get('http://localhost:5000/category', Config)
             .then((response) => setCategories(response.data))
             .catch((error) => console.error('Error fetching categories:', error))
 
         // Ambil data produk berdasarkan id
-        axios
-            .get(`http://localhost:5000/product/${id}`)
+        axiosJWT
+            .get(`http://localhost:5000/product/${id}`, Config)
             .then((response) => {
                 setProduct(response.data)
                 setFormData(response.data) // Mengisi formData dengan data produk
@@ -61,11 +64,12 @@ function EditProduct() {
         e.preventDefault()
 
         // Kirim permintaan PATCH untuk memperbarui produk
-        axios
-            .patch(`http://localhost:5000/product/${id}`, formData)
+        axiosJWT
+            .put(`http://localhost:5000/product/${id}`, formData, Config)
             .then(() => {
                 navigate('/products')
                 // Tangani kesuksesan, misalnya, tampilkan pesan sukses atau redirect
+                showSuccessAlert('Product Berhasil Diupdate!')
             })
             .catch((error) => console.error('Error updating product:', error))
     }

@@ -1,29 +1,13 @@
-import React, { useEffect } from 'react'
-import ListCategory from './ListCategory'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { getMe } from '../../features/authSlice'
+import React from 'react'
+import { useAuth } from '../../auth/useAuth'
+import List from './List'
 
 function Category() {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const { isError, user } = useSelector((state) => state.auth)
+    const { token } = useAuth()
 
-    useEffect(() => {
-        dispatch(getMe())
-    }, [dispatch])
-
-    useEffect(() => {
-        if (isError) {
-            navigate('/login')
-        }
-        if (user && user.role !== 'admin') {
-            navigate('/')
-        }
-    }, [isError, user, navigate])
     return (
         <div className="flex flex-row w-full">
-            <ListCategory />
+            <List token={token} />
         </div>
     )
 }

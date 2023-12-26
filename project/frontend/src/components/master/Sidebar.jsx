@@ -9,9 +9,10 @@ import {
     HiOutlineCog,
     HiOutlineQuestionMarkCircle
 } from 'react-icons/hi'
-import { FaCube, FaCubes, FaRegIdCard } from 'react-icons/fa'
+import { FaCube, FaCubes, FaRegIdCard, FaTruck } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { LogOut, reset } from '../features/authSlice'
+import axios from 'axios'
 
 const linkClasses =
     'flex items-center gap-2 font-light px-2 py-2 hover:bg-neutral-700 hover:no-underline active:bg-neutral-600 rounded-sm text-base'
@@ -22,10 +23,13 @@ export default function Sidebar() {
     const { pathname } = useLocation()
     const { user } = useSelector((state) => state.auth)
 
-    const logout = () => {
-        dispatch(LogOut())
-        dispatch(reset())
-        navigate('/login')
+    const logout = async () => {
+        try {
+            await axios.delete('http://localhost:5000/logout')
+            navigate('/login')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -47,40 +51,34 @@ export default function Sidebar() {
                     </span>
                     Dashboard
                 </Link>
-                {user && user.role === 'admin' && (
-                    <>
-                        <Link
-                            to="/category"
-                            className={classNames(
-                                pathname === '/category' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
-                                linkClasses
-                            )}
-                        >
-                            <span className="text-xl">
-                                <FaCubes />
-                            </span>
-                            Category
-                        </Link>
-
-                        <Link
-                            to="/products"
-                            className={classNames(
-                                pathname === '/products' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
-                                linkClasses
-                            )}
-                        >
-                            <span className="text-xl">
-                                <FaCube />
-                            </span>
-                            Product
-                        </Link>
-                    </>
-                )}
-
                 <Link
-                    to="/member"
+                    to="/category"
                     className={classNames(
-                        pathname === '/member' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        pathname === '/category' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        linkClasses
+                    )}
+                >
+                    <span className="text-xl">
+                        <FaCubes />
+                    </span>
+                    Category
+                </Link>
+                <Link
+                    to="/products"
+                    className={classNames(
+                        pathname === '/products' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        linkClasses
+                    )}
+                >
+                    <span className="text-xl">
+                        <FaCube />
+                    </span>
+                    Product
+                </Link>
+                <Link
+                    to="/members"
+                    className={classNames(
+                        pathname === '/members' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
                         linkClasses
                     )}
                 >
@@ -88,6 +86,18 @@ export default function Sidebar() {
                         <FaRegIdCard />
                     </span>
                     Member
+                </Link>
+                <Link
+                    to="/suppliers"
+                    className={classNames(
+                        pathname === '/suppliers' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        linkClasses
+                    )}
+                >
+                    <span className="text-xl">
+                        <FaTruck />
+                    </span>
+                    Supplier
                 </Link>
             </div>
             <div className="flex flex-col gap-0.5 pt-2 border-t border-neutral-700">

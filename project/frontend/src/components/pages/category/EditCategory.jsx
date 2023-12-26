@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useAuth } from '../../auth/useAuth'
+import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
 function EditCategory() {
     const [nama_kategori, setNama_kategori] = useState('')
     const [msg, setMsg] = useState('')
     const navigate = useNavigate()
     const { id } = useParams()
+    const { axiosJWT, Config } = useAuth()
 
     useEffect(() => {
         const getCategoryById = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/category/${id}`)
+                const response = await axiosJWT.get(`http://localhost:5000/category/${id}`, Config)
                 setNama_kategori(response.data.nama_kategori)
             } catch (error) {
                 if (error.response) {
@@ -25,10 +28,15 @@ function EditCategory() {
     const updateCategory = async (e) => {
         e.preventDefault()
         try {
-            await axios.patch(`http://localhost:5000/category/${id}`, {
-                nama_kategori: nama_kategori
-            })
+            await axios.put(
+                `http://localhost:5000/category/${id}`,
+                {
+                    nama_kategori: nama_kategori
+                },
+                Config
+            )
             navigate('/category')
+            showSuccessAlert('Category Berhasil Diupdate!')
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg)

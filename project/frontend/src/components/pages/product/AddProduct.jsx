@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../../auth/useAuth'
+import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
 const formFields = [
     { name: 'nama_produk', label: 'Nama Produk', type: 'text' },
@@ -27,6 +29,7 @@ function AddProduct() {
     })
     const [categories, setCategories] = useState([])
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const { axiosJWT, Config } = useAuth()
 
     const addProduct = () => {
         setFormData([
@@ -46,8 +49,8 @@ function AddProduct() {
 
     useEffect(() => {
         // Ambil kategori dari backend
-        axios
-            .get('http://localhost:5000/category')
+        axiosJWT
+            .get('http://localhost:5000/category', Config)
             .then((response) => setCategories(response.data))
             .catch((error) => console.error('Error fetching categories:', error))
     }, [])
@@ -66,10 +69,11 @@ function AddProduct() {
         setIsSubmitting(true)
 
         // Kirim permintaan POST untuk membuat produk baru
-        axios
-            .post('http://localhost:5000/product', formData)
+        axiosJWT
+            .post('http://localhost:5000/product', formData, Config)
             .then((response) => {
                 navigate('/products')
+                showSuccessAlert('Product Berhasil Ditambahkan!')
                 // Tangani kesuksesan, misalnya, tampilkan pesan sukses atau redirect
 
                 // Reset nilai formData setelah pengiriman formulir

@@ -3,18 +3,21 @@ import { HiOutlineBell, HiOutlineChatAlt, HiOutlineSearch } from 'react-icons/hi
 import { Menu, Popover, Transition } from '@headlessui/react'
 import classNames from 'classnames'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
-import { LogOut, reset } from '../features/authSlice'
 
 function Header() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { user } = useSelector((state) => state.auth)
 
-    const logout = () => {
-        dispatch(LogOut())
-        dispatch(reset())
-        navigate('/login')
+    const logout = async () => {
+        try {
+            await axios.delete('http://localhost:5000/logout')
+            navigate('/login')
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <div className="bg-white h-16 px-4 flex justify-between items-center border-b border-gray-200">
