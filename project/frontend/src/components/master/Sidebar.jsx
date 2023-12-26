@@ -9,7 +9,9 @@ import {
     HiOutlineCog,
     HiOutlineQuestionMarkCircle
 } from 'react-icons/hi'
-import { FaCube, FaCubes, FaRegIdCard, FaTruck } from 'react-icons/fa'
+
+import { SiMoneygram } from 'react-icons/si'
+import { FaCube, FaCubes, FaMoneyBill, FaRegIdCard, FaTruck } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { LogOut, reset } from '../features/authSlice'
 import axios from 'axios'
@@ -98,6 +100,18 @@ export default function Sidebar() {
                         <FaTruck />
                     </span>
                     Supplier
+                </Link>
+                <Link
+                    to="/pengeluaran"
+                    className={classNames(
+                        pathname === '/pengeluaran' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        linkClasses
+                    )}
+                >
+                    <span className="text-xl">
+                        <FaMoneyBill />
+                    </span>
+                    Pengeluaran
                 </Link>
             </div>
             <div className="flex flex-col gap-0.5 pt-2 border-t border-neutral-700">

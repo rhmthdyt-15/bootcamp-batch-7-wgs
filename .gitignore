@@ -13,3 +13,6 @@ week2/task4/404.html
 week3/task1/node_modules
 
 project/backend/node_modules 
+project/backend/scripts
+project/frontend/node_modules 
+project/backend/request.rest

@@ -16,6 +16,9 @@ import BarcodeProduct from './components/pages/product/BarcodeProduct'
 import Supplier from './components/pages/supplier'
 import AddSupplier from './components/pages/supplier/AddSupplier'
 import EditSupplier from './components/pages/supplier/EditSupplier'
+import Pengeluaran from './components/pages/pengeluaran'
+import AddPengeluaran from './components/pages/pengeluaran/AddPengeluaran'
+import EditPengeluaran from './components/pages/pengeluaran/EditPengeluaran'
 
 function App() {
     return (
@@ -45,6 +48,11 @@ function App() {
                     <Route path="/suppliers" element={<Supplier />} />
                     <Route path="/suppliers/add" element={<AddSupplier />} />
                     <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+
+                    {/* Pengeluaran */}
+                    <Route path="/pengeluaran" element={<Pengeluaran />} />
+                    <Route path="/pengeluaran/add" element={<AddPengeluaran />} />
+                    <Route path="/pengeluaran/edit/:id" element={<EditPengeluaran />} />
                 </Route>
                 <Route path="login" element={<Login />} />
             </Routes>

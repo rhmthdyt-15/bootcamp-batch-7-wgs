@@ -13,10 +13,8 @@ import AuthRoute from "./routes/AuthRoute.js";
 import ProductRoute from "./routes/ProductRoute.js";
 import MemberRoute from "./routes/MemberRoute.js";
 import SupplierRoute from "./routes/SupplierRoute.js";
-import Product from "./models/ProductModel.js";
-import Member from "./models/MemberModel.js";
-import Category from "./models/CategoryModel.js";
-import Supplier from "./models/SupplierModel.js";
+import PengeluaranRoute from "./routes/PengeluaranRoute.js";
+import Pengeluaran from "./models/PengeluaranModel.js";
 
 dotenv.config(); // Pindahkan ini ke atas konfigurasi session
 
@@ -28,7 +26,7 @@ const store = new sessionStore({
   db: db,
 });
 // (async () => {
-//   await Supplier.sync();
+//   await Pengeluaran.sync();
 //   // await Category.sync();
 //   // await Product.sync();
 //   // await Member.sync();
@@ -66,6 +64,7 @@ app.use(AuthRoute);
 app.use(ProductRoute);
 app.use(MemberRoute);
 app.use(SupplierRoute);
+app.use(PengeluaranRoute);
 
 // store.sync();
 
