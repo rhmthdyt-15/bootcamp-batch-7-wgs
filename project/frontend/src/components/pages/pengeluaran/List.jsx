@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../master/SweetAlertUtil'
 import { HiOutlineSearch } from 'react-icons/hi'
-import { formatRupiah } from '../../features/utils'
+import { formatRupiah, formatTanggal } from '../../features/utils'
 import { useAuth } from '../../auth/useAuth'
 
 /**
@@ -169,6 +169,7 @@ function List() {
                                 />
                             </th>
                             <th>No</th>
+                            <th>Tanggal</th>
                             <th>Deskripsi</th>
                             <th>Nominal</th>
                             <th>Aksi</th>
@@ -187,6 +188,7 @@ function List() {
                                     />
                                 </td>
                                 <td>{index + 1}</td>
+                                <td>{formatTanggal(row.createdAt)}</td>
                                 {/* Kolom data row */}
                                 <td>{row.deskripsi}</td>
                                 <td className="font-bold">Rp. {formatRupiah(row.nominal)}</td>
