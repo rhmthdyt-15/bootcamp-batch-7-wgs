@@ -124,7 +124,7 @@ export const deleteMultiplePengeluaran = async (req, res) => {
   try {
     await Pengeluaran.destroy({
       where: {
-        id_pengeluaran: ids,
+        id: ids,
       },
     });
 
