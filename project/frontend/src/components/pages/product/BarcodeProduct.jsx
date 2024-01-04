@@ -14,8 +14,8 @@ function BarcodeProduct() {
         const fetchProducts = async () => {
             try {
                 const productDetails = await Promise.all(
-                    products.map(async (productId) => {
-                        const response = await axiosJWT.get(`http://localhost:5000/product/${productId}`, Config)
+                    products.map(async (product) => {
+                        const response = await axiosJWT.get(`http://localhost:5000/product/${product.id}`, Config)
                         return response.data
                     })
                 )
@@ -28,7 +28,7 @@ function BarcodeProduct() {
         if (products.length > 0) {
             fetchProducts()
         }
-    }, [products, axiosJWT, Config])
+    }, [])
 
     return (
         <div className="bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 flex-1">

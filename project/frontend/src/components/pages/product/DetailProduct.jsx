@@ -43,7 +43,11 @@ function DetailProduct() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     {/* Menampilkan gambar produk */}
-                    <img src={product.foto_produk_path} alt={product.nama_produk} className="w-full h-auto mb-4" />
+                    <img
+                        src={`http://localhost:5000${product.foto_produk_path}`}
+                        alt={product.nama_produk}
+                        className="w-1600 h-840 object-cover mb-4"
+                    />
                 </div>
                 <div>
                     {/* Menampilkan informasi produk seperti kode, merk, harga, dll. */}

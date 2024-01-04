@@ -5,26 +5,61 @@ import Swal from 'sweetalert2'
 import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../master/SweetAlertUtil'
 import { HiOutlineSearch } from 'react-icons/hi'
 import { useAuth } from '../../auth/useAuth'
+import SearchComponent from '../../master/SearchComponent'
+import Pagination from '../../master/Pagination'
+import PaginationInfo from '../../master/PaginationInfo'
 
 // Komponen untuk menampilkan daftar kategori
 function List() {
     const [category, setCategory] = useState([]) // State untuk menyimpan data kategori
     const { axiosJWT, Config } = useAuth() // Mengambil objek axiosJWT dan Config dari useAuth hook
+    const [page, setPage] = useState(0)
+    const [limit, setLimit] = useState(5)
+    const [pages, setPages] = useState(0)
+    const [rows, setRows] = useState(0)
+    const [keyword, setKeyword] = useState('')
+    const [query, setQuery] = useState('')
 
     // Mengambil data kategori saat komponen dimount
     useEffect(() => {
         getCategory()
-    }, [])
+    }, [page, keyword])
 
     // Fungsi untuk mengambil data kategori dari server
     const getCategory = async () => {
         try {
-            const response = await axiosJWT.get('http://localhost:5000/category', Config)
-            setCategory(response.data.map((item) => ({ ...item, selected: false })))
+            const response = await axiosJWT.get(
+                `http://localhost:5000/category?search_query=${keyword}&page=${page}&limit=${limit}`,
+                Config
+            )
+            // Pengecekan apakah response.data.result adalah array
+            if (Array.isArray(response.data.result)) {
+                // Mengupdate state products dengan data produk dan menambahkan properti selected
+                setCategory(response.data.result.map((item) => ({ ...item, selected: false })))
+                setPage(response.data.page)
+                setPages(response.data.totalPage)
+                setRows(response.data.totalRows)
+            } else {
+                console.error('Invalid data format received:', response.data)
+                // Menampilkan pesan kesalahan jika format data tidak sesuai
+                showErrorAlert('Format data produk tidak valid.')
+            }
         } catch (error) {
             console.error('Error fetching categories:', error)
             showErrorAlert('Gagal mengambil kategori.')
         }
+    }
+
+    // Fungsi untuk mengubah halaman
+    const changePage = (newPage) => {
+        setPage(newPage)
+    }
+
+    // Fungsi untuk meng-handle perubahan input pencarian
+    const handleSearchInputChange = (e) => {
+        setQuery(e.target.value)
+        setPage(0) // Reset halaman ke 0 ketika pengguna mengetik
+        setKeyword(e.target.value) // Menggunakan e.target.value langsung daripada query yang sudah di-update
     }
 
     // Fungsi untuk menghapus kategori berdasarkan ID
@@ -118,14 +153,7 @@ function List() {
                     </button>
                 </div>
                 {/* Input pencarian kategori */}
-                <div className="relative">
-                    <HiOutlineSearch fontSize={20} className="text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="text-sm focus:outline-none active:outline-none h-10 w-[20rem] border border-gray-300 rounded-sm pl-11 pr-4"
-                    />
-                </div>
+                <SearchComponent query={query} handleSearchInputChange={handleSearchInputChange} />
             </div>
 
             {/* Tabel untuk menampilkan daftar kategori */}
@@ -141,7 +169,6 @@ function List() {
                                     onChange={toggleAllSelection}
                                 />
                             </th>
-                            <th>No</th>
                             <th>Nama Kategori</th>
                             <th>Action</th>
                         </tr>
@@ -157,7 +184,6 @@ function List() {
                                         onChange={() => toggleSelection(categori.id)}
                                     />
                                 </td>
-                                <td>{index + 1}</td>
                                 <td>{categori.nama_kategori}</td>
                                 <td className="flex space-x-2">
                                     {/* Tombol untuk mengedit kategori */}
@@ -179,6 +205,10 @@ function List() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+            <div className="flex justify-between items-center mb-3 mt-3">
+                <PaginationInfo rows={rows} page={page} pages={pages} />
+                <Pagination currentPage={page} totalPages={pages} onPageChange={changePage} />
             </div>
         </div>
     )

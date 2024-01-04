@@ -19,6 +19,9 @@ import EditSupplier from './components/pages/supplier/EditSupplier'
 import Pengeluaran from './components/pages/pengeluaran'
 import AddPengeluaran from './components/pages/pengeluaran/AddPengeluaran'
 import EditPengeluaran from './components/pages/pengeluaran/EditPengeluaran'
+import Pembelian from './components/pages/pembelian'
+import PilihSupplier from './components/pages/pembelian/PilihSupplier'
+import PembeianDetail from './components/pages/pembelianDetail'
 
 function App() {
     return (
@@ -53,6 +56,11 @@ function App() {
                     <Route path="/pengeluaran" element={<Pengeluaran />} />
                     <Route path="/pengeluaran/add" element={<AddPengeluaran />} />
                     <Route path="/pengeluaran/edit/:id" element={<EditPengeluaran />} />
+
+                    {/* Pembelian */}
+                    <Route path="/pembelian" element={<Pembelian />} />
+                    <Route path="/pembelian/pilih_supplier" element={<PilihSupplier />} />
+                    <Route path="/pembelian/pilih_supplier/create" element={<PembeianDetail />} />
                 </Route>
                 <Route path="login" element={<Login />} />
             </Routes>

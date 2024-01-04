@@ -12,7 +12,7 @@ import { adminOnly, verifyToken } from "../middleware/Auth.js";
 
 const router = express.Router();
 
-router.get("/pengeluaran", verifyToken, adminOnly, getPengeluaranAll);
+router.get("/pengeluaran", getPengeluaranAll);
 router.get("/pengeluaran/:id", verifyToken, adminOnly, getPengeluaranById);
 router.post("/pengeluaran", verifyToken, adminOnly, createPengeluaran);
 router.put("/pengeluaran/:id", verifyToken, adminOnly, updatePengeluaran);

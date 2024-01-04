@@ -1,3 +1,4 @@
+// models/PembelianModel.js
 import { Sequelize, DataTypes } from "sequelize";
 import db from "../config/Database.js";
 import Supplier from "./SupplierModel.js";

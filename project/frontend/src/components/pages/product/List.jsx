@@ -4,33 +4,67 @@ import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../m
 import { HiOutlineSearch } from 'react-icons/hi'
 import { formatRupiah } from '../../features/utils'
 import { useAuth } from '../../auth/useAuth'
+import Pagination from '../../master/Pagination'
+import SearchComponent from '../../master/SearchComponent'
+import PaginationInfo from '../../master/PaginationInfo'
 
 // Komponen untuk menampilkan daftar produk
 function ListProduct() {
-    // State untuk menyimpan data produk
     const [products, setProducts] = useState([])
+    const [page, setPage] = useState(0)
+    const [limit, setLimit] = useState(5)
+    const [pages, setPages] = useState(0)
+    const [rows, setRows] = useState(0)
+    const [keyword, setKeyword] = useState('')
+    const [query, setQuery] = useState('')
+    const [msg, setMsg] = useState('')
 
     // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
     const { axiosJWT, Config } = useAuth()
 
-    // Menggunakan useEffect untuk memuat data produk saat komponen dimount
+    // Menggunakan useEffect untuk memuat data produk saat komponen dimount atau saat ada perubahan pada 'page' dan 'keyword'
     useEffect(() => {
         getProducts()
-    }, [])
+    }, [page, keyword])
 
     // Fungsi untuk mendapatkan data produk dari backend
     const getProducts = async () => {
         try {
             // Menggunakan axios instance untuk mengambil data produk
-            const response = await axiosJWT.get('http://localhost:5000/product', Config)
+            const response = await axiosJWT.get(
+                `http://localhost:5000/product?search_query=${keyword}&page=${page}&limit=${limit}`,
+                Config
+            )
 
-            // Mengupdate state products dengan data produk dan menambahkan properti selected
-            setProducts(response.data.map((item) => ({ ...item, selected: false })))
+            // Pengecekan apakah response.data.result adalah array
+            if (Array.isArray(response.data.result)) {
+                // Mengupdate state products dengan data produk dan menambahkan properti selected
+                setProducts(response.data.result.map((item) => ({ ...item, selected: false })))
+                setPage(response.data.page)
+                setPages(response.data.totalPage)
+                setRows(response.data.totalRows)
+            } else {
+                console.error('Invalid data format received:', response.data)
+                // Menampilkan pesan kesalahan jika format data tidak sesuai
+                showErrorAlert('Format data produk tidak valid.')
+            }
         } catch (error) {
             console.error('Error fetching products:', error)
             // Menampilkan pesan kesalahan jika gagal mendapatkan produk
             showErrorAlert('Gagal mengambil produk.')
         }
+    }
+
+    // Fungsi untuk mengubah halaman
+    const changePage = (newPage) => {
+        setPage(newPage)
+    }
+
+    // Fungsi untuk meng-handle perubahan input pencarian
+    const handleSearchInputChange = (e) => {
+        setQuery(e.target.value)
+        setPage(0) // Reset halaman ke 0 ketika pengguna mengetik
+        setKeyword(e.target.value) // Menggunakan e.target.value langsung daripada query yang sudah di-update
     }
 
     // Fungsi untuk menghapus produk berdasarkan ID
@@ -124,9 +158,9 @@ function ListProduct() {
                     {/* Tombol Cetak Barcode untuk Produk Terpilih */}
                     <Link
                         to={{
-                            pathname: '/products/barcode',
-                            state: { products: products.filter((item) => item.selected) }
+                            pathname: '/products/barcode'
                         }}
+                        state={{ products: products.filter((item) => item.selected) }}
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     >
                         Cetak Barcode
@@ -140,14 +174,7 @@ function ListProduct() {
                     </button>
                 </div>
                 {/* Pencarian produk */}
-                <div className="relative">
-                    <HiOutlineSearch fontSize={20} className="text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="text-sm focus:outline-none active:outline-none h-10 w-[20rem] border border-gray-300 rounded-sm pl-11 pr-4"
-                    />
-                </div>
+                <SearchComponent query={query} handleSearchInputChange={handleSearchInputChange} />
             </div>
 
             {/* Tabel Daftar Produk */}
@@ -155,7 +182,6 @@ function ListProduct() {
                 <table className="w-full text-gray-700">
                     <thead>
                         <tr>
-                            {/* Kolom Pilihan Produk */}
                             <th>
                                 <input
                                     type="checkbox"
@@ -163,22 +189,19 @@ function ListProduct() {
                                     onChange={toggleAllSelection}
                                 />
                             </th>
-                            {/* Kolom Nomor */}
-                            <th>No</th>
-                            {/* Kolom Nama Produk */}
+
+                            <th>Kode Produk</th>
                             <th>Nama Produk</th>
-                            {/* Kolom Stok */}
+                            <th>Merk</th>
+                            <th>Kategori</th>
                             <th>Stok</th>
-                            {/* Kolom Harga Jual */}
                             <th>Harga Jual</th>
-                            {/* Kolom Aksi */}
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((product, index) => (
+                        {products.map((product) => (
                             <tr key={product.id}>
-                                {/* Pilihan Produk */}
                                 <td>
                                     <input
                                         type="checkbox"
@@ -186,31 +209,25 @@ function ListProduct() {
                                         onChange={() => toggleSelection(product.id)}
                                     />
                                 </td>
-                                {/* Nomor Urut */}
-                                <td>{index + 1}</td>
-                                {/* Nama Produk */}
+                                <td>{product.kode_produk}</td>
                                 <td>{product.nama_produk}</td>
-                                {/* Stok Produk */}
+                                <td>{product.merk}</td>
+                                <td>{product.kategori?.nama_kategori}</td>
                                 <td>{product.stok}</td>
-                                {/* Harga Jual Produk */}
                                 <td className="font-bold">Rp. {formatRupiah(product.harga_jual)}</td>
-                                {/* Aksi */}
                                 <td className="flex space-x-2">
-                                    {/* Tombol Edit */}
                                     <Link
                                         to={`/products/edit/${product.id}`}
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     >
                                         Edit
                                     </Link>
-                                    {/* Tombol Detail */}
                                     <Link
                                         to={`/products/detail/${product.id}`}
                                         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
                                     >
                                         Detail
                                     </Link>
-                                    {/* Tombol Hapus */}
                                     <button
                                         onClick={() => deleteProduct(product.id)}
                                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -223,9 +240,12 @@ function ListProduct() {
                     </tbody>
                 </table>
             </div>
+            <div className="flex justify-between items-center mb-3 mt-3">
+                <PaginationInfo rows={rows} page={page} pages={pages} />
+                <Pagination currentPage={page} totalPages={pages} onPageChange={changePage} />
+            </div>
         </div>
     )
 }
 
-// Mengekspor komponen ListProduct sebagai default
 export default ListProduct

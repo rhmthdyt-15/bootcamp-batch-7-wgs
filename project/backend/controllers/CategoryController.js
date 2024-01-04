@@ -1,13 +1,20 @@
 // Import model kategori (gantilah sesuai dengan struktur folder dan nama model Anda)
+import { Op } from "sequelize";
 import Category from "../models/CategoryModel.js";
+import { getPaginatedData } from "../utils/pagination.js";
 
 // Fungsi untuk mendapatkan semua kategori
 export const getCategory = async (req, res) => {
   try {
-    // Mengambil semua kategori dengan atribut tertentu
-    const response = await Category.findAll({
-      attributes: ["id", "nama_kategori"],
-    });
+    const response = await getPaginatedData(
+      Category,
+      req.query,
+      ["nama_kategori"],
+      Op.startsWith,
+      {
+        attributes: ["id", "nama_kategori"],
+      }
+    );
 
     // Mengirimkan respons dengan status OK dan data kategori
     res.status(200).json(response);

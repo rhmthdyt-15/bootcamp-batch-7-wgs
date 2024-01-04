@@ -1,13 +1,18 @@
 // Import model member (gantilah sesuai dengan struktur folder dan nama model Anda)
+import { Op } from "sequelize";
 import Member from "../models/MemberModel.js";
+import { getPaginatedData } from "../utils/pagination.js";
 
 // Fungsi untuk mendapatkan semua data member
 export const getMemberAll = async (req, res) => {
   try {
     // Mengambil semua data member dan diurutkan berdasarkan tanggal pembuatan (createdAt) secara descending
-    const response = await Member.findAll({
-      order: [["createdAt", "DESC"]],
-    });
+    const response = await getPaginatedData(
+      Member,
+      req.query,
+      ["nama", "alamat", "telepon", "kode_member"],
+      Op.startsWith
+    );
 
     // Mengirimkan respons dengan status OK dan data member
     res.status(200).json(response);
@@ -41,25 +46,24 @@ export const createMember = async (req, res) => {
   const { nama, alamat, telepon } = req.body;
 
   try {
-    // Mengambil data member terakhir untuk mendapatkan kode_member terakhir
+    // Mengambil data member terakhir untuk mendapatkan id terakhir
     const latestMember = await Member.findOne({
       order: [["id", "DESC"]],
     });
 
-    // Fungsi untuk menambahkan nol di depan angka
-    function tambah_nol_didepan(number, length) {
-      return String(number).padStart(length, "0");
-    }
-
+    // Mendapatkan id baru
     let newMemberId;
     if (latestMember) {
-      newMemberId = parseInt(latestMember.kode_member.substring(1)) + 1;
+      newMemberId = latestMember.id + 1;
     } else {
       newMemberId = 1;
     }
 
-    // Menentukan kode_member baru dengan menambahkan 1 ke kode_member terakhir
-    const newKodeMember = "M" + tambah_nol_didepan(newMemberId, 5);
+    // Menambahkan nol di depan angka hingga mencapai panjang 5 digit
+    const formattedId = newMemberId.toString().padStart(5, "0");
+
+    // Menentukan kode_member baru dengan menggunakan angka yang telah diformat
+    const newKodeMember = "M" + formattedId;
 
     // Membuat member baru dengan kode_member yang baru dihasilkan
     const newMember = await Member.create({

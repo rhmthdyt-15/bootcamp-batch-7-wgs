@@ -11,7 +11,7 @@ import {
 } from 'react-icons/hi'
 
 import { SiMoneygram } from 'react-icons/si'
-import { FaCube, FaCubes, FaMoneyBill, FaRegIdCard, FaTruck } from 'react-icons/fa'
+import { FaCube, FaCubes, FaDownload, FaMoneyBill, FaRegIdCard, FaTruck } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { LogOut, reset } from '../features/authSlice'
 import axios from 'axios'
@@ -35,12 +35,15 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="bg-neutral-900 w-60 p-3 flex flex-col text-white">
+        <div className="bg-neutral-900 w-60 p-3 flex flex-col text-white max-h-screen overflow-y-auto">
             <div className="flex items-center gap-2 px-1 py-3">
                 <FcBullish fontSize={24} />
                 <span className="text-neutral-100 text-lg">POS</span>
             </div>
-            <div className="flex-1 py-8 flex flex-col gap-0.5">
+            <div className="flex-1 py-8 flex flex-col gap-0.3">
+                <div className="flex items-center px-2">
+                    <span className="text-neutral-100 text-base">MASTER</span>
+                </div>
                 <Link
                     to="/"
                     className={classNames(
@@ -68,7 +71,9 @@ export default function Sidebar() {
                 <Link
                     to="/products"
                     className={classNames(
-                        pathname === '/products' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        pathname === '/products' || pathname === '/products/add'
+                            ? ' bg-neutral-700 text-white'
+                            : 'text-neutral-400',
                         linkClasses
                     )}
                 >
@@ -101,6 +106,10 @@ export default function Sidebar() {
                     </span>
                     Supplier
                 </Link>
+
+                <div className="flex items-center px-2">
+                    <span className="text-neutral-100 text-base mt-3">TRANSAKSI</span>
+                </div>
                 <Link
                     to="/pengeluaran"
                     className={classNames(
@@ -112,6 +121,18 @@ export default function Sidebar() {
                         <FaMoneyBill />
                     </span>
                     Pengeluaran
+                </Link>
+                <Link
+                    to="/pembelian"
+                    className={classNames(
+                        pathname === '/pembelian' ? ' bg-neutral-700 text-white' : 'text-neutral-400',
+                        linkClasses
+                    )}
+                >
+                    <span className="text-xl">
+                        <FaDownload />
+                    </span>
+                    Pembelian
                 </Link>
             </div>
             <div className="flex flex-col gap-0.5 pt-2 border-t border-neutral-700">

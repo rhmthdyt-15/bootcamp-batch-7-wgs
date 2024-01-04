@@ -11,14 +11,11 @@ const formFields = [
     { name: 'harga_beli', label: 'Harga Beli', type: 'text' },
     { name: 'harga_jual', label: 'Harga Jual', type: 'text' },
     { name: 'kategoriId', label: 'Kategori', type: 'select' },
-    { name: 'stok', label: 'Stock', type: 'text' },
-    { name: 'diskon', label: 'Diskon', type: 'text' },
-    { name: 'foto_produk_path', label: 'Foto Produk', type: 'text' }
+    { name: 'diskon', label: 'Diskon', type: 'text' }
 ]
 
 // Komponen untuk mengedit produk berdasarkan ID
 function EditProduct() {
-    // State untuk menyimpan data formulir
     const [formData, setFormData] = useState({
         merk: '',
         nama_produk: '',
@@ -30,63 +27,54 @@ function EditProduct() {
         kategoriId: ''
     })
 
-    // Mendapatkan ID produk dari parameter URL
-    const { id } = useParams()
-
-    // State untuk menyimpan data kategori
     const [categories, setCategories] = useState([])
-
-    // State untuk menyimpan data produk
     const [product, setProduct] = useState(null)
+    const [preview, setPreview] = useState('')
 
-    // Hook untuk navigasi
+    const { id } = useParams()
     const navigate = useNavigate()
-
-    // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
     const { axiosJWT, Config } = useAuth()
 
-    // Menggunakan useEffect untuk memuat data kategori dan produk saat komponen dimount atau ID berubah
     useEffect(() => {
-        // Ambil kategori dari backend
         axiosJWT
             .get('http://localhost:5000/category', Config)
             .then((response) => setCategories(response.data))
             .catch((error) => console.error('Error fetching categories:', error))
 
-        // Ambil data produk berdasarkan id
         axiosJWT
             .get(`http://localhost:5000/product/${id}`, Config)
             .then((response) => {
                 setProduct(response.data)
-                setFormData(response.data) // Mengisi formData dengan data produk
+                setFormData(response.data)
+                // Set nilai awal preview hanya jika foto_produk_path tersedia
+                if (response.data.foto_produk_path) {
+                    setPreview(response.data.foto_produk_path)
+                } else {
+                    setPreview('') // Atur preview menjadi string kosong jika foto_produk_path tidak tersedia
+                }
             })
             .catch((error) => console.error('Error fetching product:', error))
     }, [id])
 
-    // Jika data produk belum dimuat, tampilkan pesan Loading...
-    if (!product) {
-        return <div>Loading...</div>
-    }
-
-    // Handle perubahan pada formulir
     const handleChange = (e) => {
+        if (e.target.type === 'file') {
+            const file = e.target.files[0]
+            setPreview(URL.createObjectURL(file))
+        }
+
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         })
     }
 
-    // Handle pengiriman formulir untuk memperbarui produk
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        // Kirim permintaan PATCH untuk memperbarui produk
         axiosJWT
             .put(`http://localhost:5000/product/${id}`, formData, Config)
             .then(() => {
-                // Redirect ke halaman produk setelah berhasil
                 navigate('/products')
-                // Tampilkan pesan sukses
                 showSuccessAlert('Product Berhasil Diupdate!')
             })
             .catch((error) => console.error('Error updating product:', error))
@@ -150,13 +138,22 @@ function EditProduct() {
                             )}
                         </div>
                     ))}
+                    <div className="mb-2">
+                        <label className="block text-gray-700 text-sm font-bold">Foto Produk</label>
+                        <input type="file" accept="image/*" onChange={(e) => handleChange(e)} className="border p-2" />
+                        {preview && (
+                            <div className="mt-2">
+                                <img src={preview} alt="Preview" className="max-w-full h-auto" />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Tombol Simpan dan Kembali */}
                 <div className="flex justify-end">
                     {/* Tombol Simpan */}
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
                         type="submit"
                     >
                         Save

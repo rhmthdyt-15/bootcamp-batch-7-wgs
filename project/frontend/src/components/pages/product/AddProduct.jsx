@@ -4,116 +4,90 @@ import axios from 'axios'
 import { useAuth } from '../../auth/useAuth'
 import { showSuccessAlert } from '../../master/SweetAlertUtil'
 
-// Definisi field untuk formulir
 const formFields = [
     { name: 'nama_produk', label: 'Nama Produk', type: 'text' },
     { name: 'merk', label: 'Merk', type: 'text' },
     { name: 'harga_beli', label: 'Harga Beli', type: 'text' },
     { name: 'harga_jual', label: 'Harga Jual', type: 'text' },
     { name: 'kategoriId', label: 'Kategori', type: 'select' },
-    { name: 'stok', label: 'Stock', type: 'text' },
-    { name: 'diskon', label: 'Diskon', type: 'text' },
-    { name: 'foto_produk_path', label: 'Foto Produk', type: 'text' }
+    { name: 'diskon', label: 'Diskon', type: 'text' }
 ]
 
 function AddProduct() {
-    // Menggunakan hook useNavigate untuk navigasi halaman
     const navigate = useNavigate()
-
-    // State untuk menyimpan data formulir
+    const { axiosJWT, Config } = useAuth()
     const [formData, setFormData] = useState({
         merk: '',
         nama_produk: '',
         harga_beli: '',
         harga_jual: '',
         stok: '',
-        foto_produk_path: '',
+        foto_produk_path: null, // Ubah menjadi null agar URL preview dapat dihasilkan
         diskon: '',
         kategoriId: ''
     })
-
-    // State untuk menyimpan data kategori
     const [categories, setCategories] = useState([])
-
-    // State untuk mengindikasikan status pengiriman formulir
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [preview, setPreview] = useState('')
 
-    // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
-    const { axiosJWT, Config } = useAuth()
-
-    // Fungsi untuk menambahkan produk baru ke formulir
-    const addProduct = () => {
-        setFormData([
-            ...formData,
-            {
-                merk: '',
-                nama_produk: '',
-                harga_beli: '',
-                harga_jual: '',
-                stok: '',
-                foto_produk_path: '',
-                diskon: '',
-                kategoriId: ''
-            }
-        ])
-    }
-
-    // Menggunakan useEffect untuk memuat data kategori ketika komponen dimount
     useEffect(() => {
-        // Ambil kategori dari backend
         axiosJWT
             .get('http://localhost:5000/category', Config)
             .then((response) => setCategories(response.data))
             .catch((error) => console.error('Error fetching categories:', error))
     }, [])
 
-    // Fungsi untuk meng-handle perubahan input pada formulir
-    const handleChange = (e, index) => {
+    const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         })
     }
 
-    // Fungsi untuk meng-handle pengiriman formulir
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+
+        // Buat URL preview dari file yang dipilih
+        setPreview(URL.createObjectURL(file))
+
+        setFormData({
+            ...formData,
+            foto_produk_path: file
+        })
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
-
-        // Set state isSubmitting menjadi true
         setIsSubmitting(true)
 
-        // Kirim permintaan POST untuk membuat produk baru
+        const formDataToSend = new FormData()
+        Object.keys(formData).forEach((key) => {
+            formDataToSend.append(key, formData[key])
+        })
+
         axiosJWT
-            .post('http://localhost:5000/product', formData, Config)
+            .post('http://localhost:5000/product', formDataToSend, Config)
             .then((response) => {
                 navigate('/products')
                 showSuccessAlert('Product Berhasil Ditambahkan!')
-
-                // Reset nilai formData setelah pengiriman formulir
                 setFormData({
                     merk: '',
                     nama_produk: '',
                     harga_beli: '',
                     harga_jual: '',
                     stok: '',
-                    foto_produk_path: '',
+                    foto_produk_path: null,
                     diskon: '',
                     kategoriId: ''
                 })
-
-                // Set state isSubmitting menjadi false setelah pengiriman formulir
+                setPreview('') // Reset preview setelah submit
                 setIsSubmitting(false)
             })
             .catch((error) => {
-                // Tangani kesalahan, misalnya, tampilkan pesan kesalahan
                 console.error('Error submitting form:', error)
-
-                // Set state isSubmitting menjadi false jika terjadi kesalahan
                 setIsSubmitting(false)
             })
     }
-
-    // Mengembalikan tampilan komponen AddProduct
     return (
         <div className="bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 flex-1">
             <div className="flex justify-between items-center mb-3">
@@ -129,7 +103,7 @@ function AddProduct() {
                                     <select
                                         name={field.name}
                                         value={formData[field.name]}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e)}
                                         className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-blue-500 focus:shadow-outline-blue"
                                     >
                                         <option value="" disabled>
@@ -156,27 +130,38 @@ function AddProduct() {
                                 <input
                                     name={field.name}
                                     value={formData[field.name]}
-                                    onChange={handleChange}
+                                    onChange={(e) => handleChange(e)}
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     type={field.type}
                                 />
                             )}
                         </div>
                     ))}
+                    {/* Input file HTML standar */}
+                    <div className="mb-2">
+                        <label className="block text-gray-700 text-sm font-bold">Foto Produk</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e)}
+                            className="border p-2"
+                        />
+                        {preview && (
+                            <div className="mt-2">
+                                <img src={preview} alt="Preview" className="max-w-full h-auto" />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex justify-end">
-                    {/* Tombol untuk menyimpan formulir */}
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         type="submit"
-                        disabled={isSubmitting} // Tambahkan atribut disabled selama proses pengiriman
+                        disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Sedang Mengirim...' : 'Save'}
+                        {isSubmitting ? 'Sedang Mengirim...' : 'Simpan'}
                     </button>
-
-                    {/* Tombol untuk kembali ke halaman products */}
                     <Link
                         to="/products"
                         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-2"
@@ -189,5 +174,4 @@ function AddProduct() {
     )
 }
 
-// Mengekspor komponen AddProduct sebagai default
 export default AddProduct

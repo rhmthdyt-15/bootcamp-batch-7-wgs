@@ -1,12 +1,17 @@
 // controllers/PengeluaranController.js
+import { Op } from "sequelize";
 import Pengeluaran from "../models/PengeluaranModel.js";
+import { getPaginatedData } from "../utils/pagination.js";
 
 // Mendapatkan semua data pengeluaran
 export const getPengeluaranAll = async (req, res) => {
   try {
-    const response = await Pengeluaran.findAll({
-      order: [["createdAt", "DESC"]],
-    });
+    const response = await getPaginatedData(
+      Pengeluaran,
+      req.query,
+      ["deskripsi"],
+      Op.startsWith
+    );
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ msg: error.message });

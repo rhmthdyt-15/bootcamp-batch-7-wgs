@@ -1,11 +1,18 @@
 // Import model supplier (gantilah sesuai dengan struktur folder dan nama model Anda)
+import { Op } from "sequelize";
 import Supplier from "../models/SupplierModel.js";
+import { getPaginatedData } from "../utils/pagination.js";
 
 // Fungsi untuk mendapatkan semua data supplier
 export const getAllSupplier = async (req, res) => {
   try {
     // Mengambil semua data supplier
-    const suppliers = await Supplier.findAll();
+    const suppliers = await getPaginatedData(
+      Supplier,
+      req.query,
+      ["nama", "alamat", "telepon"],
+      Op.startsWith
+    );
 
     // Mengirimkan respons dengan status Not Found jika tidak ada supplier
     if (suppliers.length === 0) {

@@ -3,11 +3,21 @@ import { Link } from 'react-router-dom'
 import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../master/SweetAlertUtil'
 import { HiOutlineSearch } from 'react-icons/hi'
 import { useAuth } from '../../auth/useAuth'
+import SearchComponent from '../../master/SearchComponent'
+import PaginationInfo from '../../master/PaginationInfo'
+import Pagination from '../../master/Pagination'
 
 // Komponen List untuk menampilkan daftar member
 function List() {
     // State untuk menyimpan data member
     const [member, setMember] = useState([])
+    const [page, setPage] = useState(0)
+    const [limit, setLimit] = useState(5)
+    const [pages, setPages] = useState(0)
+    const [rows, setRows] = useState(0)
+    const [keyword, setKeyword] = useState('')
+    const [query, setQuery] = useState('')
+    const [msg, setMsg] = useState('')
 
     // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
     const { axiosJWT, Config } = useAuth()
@@ -15,18 +25,42 @@ function List() {
     // Menggunakan useEffect untuk memuat data member ketika komponen dimount
     useEffect(() => {
         getMember()
-    }, [])
+    }, [page, keyword])
 
     // Fungsi untuk mengambil data member dari server
     const getMember = async () => {
         try {
-            const response = await axiosJWT.get('http://localhost:5000/member', Config)
-            // Menyimpan data member ke dalam state dengan menambahkan properti selected
-            setMember(response.data.map((item) => ({ ...item, selected: false })))
+            const response = await axiosJWT.get(
+                `http://localhost:5000/member?search_query=${keyword}&page=${page}&limit=${limit}`,
+                Config
+            )
+            // Pengecekan apakah response.data.result adalah array
+            if (Array.isArray(response.data.result)) {
+                // Menyimpan data member ke dalam state dengan menambahkan properti selected
+                setMember(response.data.result.map((item) => ({ ...item, selected: false })))
+                setPages(response.data.totalPage)
+                setRows(response.data.totalRows)
+            } else {
+                console.error('Invalid data format received:', response.data)
+                // Menampilkan pesan kesalahan jika format data tidak sesuai
+                showErrorAlert('Format data produk tidak valid.')
+            }
         } catch (error) {
             console.error('Error fetching member:', error)
             showErrorAlert('Gagal mengambil member.')
         }
+    }
+
+    // Fungsi untuk mengubah halaman
+    const changePage = (newPage) => {
+        setPage(newPage)
+    }
+
+    // Fungsi untuk meng-handle perubahan input pencarian
+    const handleSearchInputChange = (e) => {
+        setQuery(e.target.value)
+        setPage(0) // Reset halaman ke 0 ketika pengguna mengetik
+        setKeyword(e.target.value) // Menggunakan e.target.value langsung daripada query yang sudah di-update
     }
 
     // Fungsi untuk menghapus member berdasarkan ID
@@ -108,15 +142,8 @@ function List() {
                         Delete
                     </button>
                 </div>
-                <div className="relative">
-                    {/* Icon pencarian dan input untuk mencari member */}
-                    <HiOutlineSearch fontSize={20} className="text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="text-sm focus:outline-none active:outline-none h-10 w-[20rem] border border-gray-300 rounded-sm pl-11 pr-4"
-                    />
-                </div>
+                {/* Icon pencarian dan input untuk mencari member */}
+                <SearchComponent query={query} handleSearchInputChange={handleSearchInputChange} />
             </div>
 
             {/* Tabel untuk menampilkan data member */}
@@ -132,7 +159,6 @@ function List() {
                                     onChange={toggleAllSelection}
                                 />
                             </th>
-                            <th>No</th>
                             <th>Kode Member</th>
                             <th>Nama</th>
                             <th>Alamat</th>
@@ -152,7 +178,6 @@ function List() {
                                         onChange={() => toggleSelection(members.id)}
                                     />
                                 </td>
-                                <td>{index + 1}</td>
                                 <td>{members.kode_member}</td>
                                 <td>{members.nama}</td>
                                 <td>{members.alamat}</td>
@@ -176,6 +201,10 @@ function List() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+            <div className="flex justify-between items-center mb-3 mt-3">
+                <PaginationInfo rows={rows} page={page} pages={pages} />
+                <Pagination currentPage={page} totalPages={pages} onPageChange={changePage} />
             </div>
         </div>
     )

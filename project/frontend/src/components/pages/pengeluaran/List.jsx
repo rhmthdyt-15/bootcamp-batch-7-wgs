@@ -4,6 +4,9 @@ import { showErrorAlert, showSuccessAlert, showConfirmationAlert } from '../../m
 import { HiOutlineSearch } from 'react-icons/hi'
 import { formatRupiah, formatTanggal } from '../../features/utils'
 import { useAuth } from '../../auth/useAuth'
+import SearchComponent from '../../master/SearchComponent'
+import PaginationInfo from '../../master/PaginationInfo'
+import Pagination from '../../master/Pagination'
 
 /**
  * Komponen untuk menampilkan daftar pengeluaran.
@@ -11,29 +14,60 @@ import { useAuth } from '../../auth/useAuth'
 function List() {
     // State untuk menyimpan data pengeluaran
     const [pengeluaran, setPengeluaran] = useState([])
-
+    const [page, setPage] = useState(0)
+    const [limit, setLimit] = useState(5)
+    const [pages, setPages] = useState(0)
+    const [rows, setRows] = useState(0)
+    const [keyword, setKeyword] = useState('')
+    const [query, setQuery] = useState('')
+    const [msg, setMsg] = useState('')
     // Menggunakan custom hook useAuth untuk mendapatkan axios instance dan konfigurasi
     const { axiosJWT, Config } = useAuth()
 
     // Menggunakan useEffect untuk mendapatkan data pengeluaran saat komponen dimuat
     useEffect(() => {
         getPengeluaran()
-    }, [])
+    }, [page, keyword])
 
     /**
      * Fungsi untuk mendapatkan data pengeluaran dari server.
      */
     const getPengeluaran = async () => {
         try {
-            const response = await axiosJWT.get('http://localhost:5000/pengeluaran', Config)
+            const response = await axiosJWT.get(
+                `http://localhost:5000/pengeluaran?search_query=${keyword}&page=${page}&limit=${limit}`,
+                Config
+            )
 
-            // Mengupdate state pengeluaran dengan data pengeluaran dari server
-            setPengeluaran(response.data.map((item) => ({ ...item, selected: false })))
+            // Pengecekan apakah response.data.result adalah array
+            if (Array.isArray(response.data.result)) {
+                // Mengupdate state pengeluaran dengan data pengeluaran dari server
+                setPengeluaran(response.data.result.map((item) => ({ ...item, selected: false })))
+                setPage(response.data.page)
+                setPages(response.data.totalPage)
+                setRows(response.data.totalRows)
+            } else {
+                console.error('Invalid data format received:', response.data)
+                // Menampilkan pesan kesalahan jika format data tidak sesuai
+                showErrorAlert('Format data produk tidak valid.')
+            }
         } catch (error) {
             // Menampilkan pesan kesalahan jika gagal mendapatkan data pengeluaran
             console.error('Error fetching pengeluaran:', error)
             showErrorAlert('Gagal mengambil pengeluaran.')
         }
+    }
+
+    // Fungsi untuk mengubah halaman
+    const changePage = (newPage) => {
+        setPage(newPage)
+    }
+
+    // Fungsi untuk meng-handle perubahan input pencarian
+    const handleSearchInputChange = (e) => {
+        setQuery(e.target.value)
+        setPage(0) // Reset halaman ke 0 ketika pengguna mengetik
+        setKeyword(e.target.value) // Menggunakan e.target.value langsung daripada query yang sudah di-update
     }
 
     /**
@@ -144,14 +178,7 @@ function List() {
                 </div>
 
                 {/* Input pencarian */}
-                <div className="relative">
-                    <HiOutlineSearch fontSize={20} className="text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
-                    <input
-                        type="text"
-                        placeholder="Cari..."
-                        className="text-sm focus:outline-none active:outline-none h-10 w-[20rem] border border-gray-300 rounded-sm pl-11 pr-4"
-                    />
-                </div>
+                <SearchComponent query={query} handleSearchInputChange={handleSearchInputChange} />
             </div>
 
             {/* Tabel daftar pengeluaran */}
@@ -213,6 +240,10 @@ function List() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+            <div className="flex justify-between items-center mb-3 mt-3">
+                <PaginationInfo rows={rows} page={page} pages={pages} />
+                <Pagination currentPage={page} totalPages={pages} onPageChange={changePage} />
             </div>
         </div>
     )
